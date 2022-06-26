@@ -27,9 +27,8 @@ func onConnected(s *tcpserve.Session) {
 	s.SetDecrypter(decrypter)
 
 	// Send handshake
-	data := writer.WriteHandshake(VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
-	log.Println(data)
-	s.Write(data)
+	handshakePacket := writer.WriteHandshake(VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
+	s.WriteRaw(handshakePacket)
 }
 
 func onPacket(s *tcpserve.Session, data []byte) {

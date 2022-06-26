@@ -5,7 +5,6 @@ import (
 )
 
 func GenerateCodecs(version int, ivRecv, ivSend [4]byte) (encrypter, decrypter func(d []byte)) {
-
 	// Create codecs
 	recv := crypto.NewCodec(ivRecv, version)
 	send := crypto.NewCodec(ivSend, version)

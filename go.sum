@@ -2,7 +2,5 @@ github.com/matthieutran/crypto v0.0.0-20220622095550-7866ac752799 h1:PWOIkLwMV3M
 github.com/matthieutran/crypto v0.0.0-20220622095550-7866ac752799/go.mod h1:xGgQK4NUnV7GxWqBICQUr+byCChHrzfWjXzEjHDTE6U=
 github.com/matthieutran/packet v0.0.0-20220624154820-ed9619a858fc h1:NYDVMPUPaIUUVJEQOe+wRPFP4vRMJsYfoXbzLAmRtnA=
 github.com/matthieutran/packet v0.0.0-20220624154820-ed9619a858fc/go.mod h1:s4VTZcSDUqG8TYeUDxHeYjR2h72DyWhZi2/xh6PZX48=
-github.com/matthieutran/tcpserve v0.1.4 h1:13lA1dxfX/wWfY11SKraPkCzCApTTevxYvILimIHtNg=
-github.com/matthieutran/tcpserve v0.1.4/go.mod h1:BNvDTlVVnLtCFBcXa4MhH/Y7VEG+Nj8TVelHUa5DFp4=
-github.com/matthieutran/tcpserve v0.1.5-0.20220626141838-545c47b25709 h1:BQe11rWey2aV+Ba8PKolfMmNjNCSO4OPJd1U34/EhH8=
-github.com/matthieutran/tcpserve v0.1.5-0.20220626141838-545c47b25709/go.mod h1:BNvDTlVVnLtCFBcXa4MhH/Y7VEG+Nj8TVelHUa5DFp4=
+github.com/matthieutran/tcpserve v0.1.5-0.20220626152902-ab7137df4067 h1:ZmfVZMXlhDdxEjmapVRZWRu9ZU02ZrSdtKfX2uBHdIA=
+github.com/matthieutran/tcpserve v0.1.5-0.20220626152902-ab7137df4067/go.mod h1:BNvDTlVVnLtCFBcXa4MhH/Y7VEG+Nj8TVelHUa5DFp4=
