@@ -6,7 +6,9 @@ import (
 	"sync"
 
 	"github.com/matthieutran/leafre-login/internal/login/net/codec"
+	"github.com/matthieutran/leafre-login/internal/login/net/handler"
 	"github.com/matthieutran/leafre-login/internal/login/net/writer"
+	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
 )
 
@@ -32,7 +34,14 @@ func onConnected(s *tcpserve.Session) {
 }
 
 func onPacket(s *tcpserve.Session, data []byte) {
-	log.Printf("Packet: % X", data)
+	var p packet.Packet
+	p.WriteBytes(data)
+
+	header := p.ReadShort()
+	switch header {
+	case 0x0001: // LOGIN_PASSWORD
+		handler.HandleLogin(p)
+	}
 }
 
 func BuildServer(wg sync.WaitGroup) *tcpserve.Server {
