@@ -4,11 +4,11 @@ import (
 	"github.com/matthieutran/crypto"
 )
 
-func GenerateCodecs(ivRecv, ivSend [4]byte) (encrypter, decrypter func(d []byte)) {
+func GenerateCodecs(version int, ivRecv, ivSend [4]byte) (encrypter, decrypter func(d []byte)) {
 
 	// Create codecs
-	recv := crypto.NewCodec(ivRecv, 83)
-	send := crypto.NewCodec(ivSend, 83)
+	recv := crypto.NewCodec(ivRecv, version)
+	send := crypto.NewCodec(ivSend, version)
 
 	// Create encrypter
 	encrypter = func(d []byte) {
