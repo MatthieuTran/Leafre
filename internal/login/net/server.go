@@ -5,8 +5,9 @@ import (
 	"log"
 	"sync"
 
+	"github.com/matthieutran/duey"
 	"github.com/matthieutran/leafre-login/internal/login/net/codec"
-	"github.com/matthieutran/leafre-login/internal/login/net/handler"
+	"github.com/matthieutran/leafre-login/internal/login/net/handler/auth"
 	"github.com/matthieutran/leafre-login/internal/login/net/writer"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
@@ -33,23 +34,36 @@ func onConnected(s *tcpserve.Session) {
 	s.WriteRaw(handshakePacket)
 }
 
-func onPacket(s *tcpserve.Session, data []byte) {
-	var p packet.Packet
-	p.WriteBytes(data)
+func onPacket(es *duey.EventStreamer) func(*tcpserve.Session, []byte) {
+	return func(s *tcpserve.Session, data []byte) {
+		var p packet.Packet
+		p.WriteBytes(data)
 
-	header := p.ReadShort()
-	switch header {
-	case 0x0001: // LOGIN_PASSWORD
-		handler.HandleLogin(p)
+		log.Println(p)
+
+		header := p.ReadShort()
+		switch header {
+		case 0x01: // LOGIN_PASSWORD
+			auth.HandleLogin(s, es, p)
+		case 0x1A: // EXCEPTION_LOG
+			_, msg := p.ReadString()
+			log.Println("Received exception log from client:", msg)
+		}
+
 	}
 }
 
-func BuildServer(wg sync.WaitGroup) *tcpserve.Server {
+func BuildServer(wg sync.WaitGroup, s *duey.EventStreamer) *tcpserve.Server {
 	logger := func(msg string) {
 		log.Println(msg)
 	}
 
-	server := tcpserve.NewServer(tcpserve.WithPort(PORT), tcpserve.WithLoggers(logger, nil), tcpserve.WithOnConnected(onConnected), tcpserve.WithOnPacket(onPacket))
+	server := tcpserve.NewServer(
+		tcpserve.WithPort(PORT),
+		tcpserve.WithLoggers(logger, nil),
+		tcpserve.WithOnConnected(onConnected),
+		tcpserve.WithOnPacket(onPacket(s)),
+	)
 	server.Start(wg)
 
 	return server

@@ -2,8 +2,10 @@ package main
 
 import (
 	"log"
+	"os"
 	"sync"
 
+	"github.com/matthieutran/leafre-login/internal/login/messaging"
 	"github.com/matthieutran/leafre-login/internal/login/net"
 )
 
@@ -12,8 +14,10 @@ func main() {
 
 	log.Println("Leafre - Login Server")
 
+	s := messaging.Init(os.Getenv("NATS_URI"))
+
 	// Create socket
-	server := net.BuildServer(wg)
+	server := net.BuildServer(wg, s)
 	wg.Add(1)
 	server.Start(wg)
 

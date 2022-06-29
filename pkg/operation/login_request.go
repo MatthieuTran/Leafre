@@ -1,6 +1,6 @@
 package operation
 
-type LoginRequestCode uint16
+type LoginRequestCode byte
 
 const (
 	Success                            LoginRequestCode = 0x0
