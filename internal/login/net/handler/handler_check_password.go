@@ -10,13 +10,13 @@ import (
 	"github.com/matthieutran/tcpserve"
 )
 
-const OpCodeCheckPassword uint16 = 0x0
+const OpCodeCheckPassword uint16 = 0x1
 
 type HandlerCheckPassword struct {
 }
 
 func (h *HandlerCheckPassword) Name() string {
-	return ""
+	return "CheckPassword"
 }
 func (h *HandlerCheckPassword) Handle(s *tcpserve.Session, es *duey.EventStreamer, p packet.Packet) []byte {
 	req := readLogin(p)        // Read packet and create LoginRequest struct
@@ -99,6 +99,7 @@ func sendSuccess(s *tcpserve.Session, res loginResponse, username string) {
 	p.WriteByte(0)              // sMsg
 	p.WriteLong(0)              // session key (for preventing remote hacks)
 	s.Write(p.Bytes())
+	log.Print(p)
 
 	/**
 	byte - result

@@ -34,29 +34,34 @@ func onConnected(s *tcpserve.Session) {
 	s.WriteRaw(handshakePacket)
 }
 
-func onPacket(es *duey.EventStreamer) func(*tcpserve.Session, []byte) {
+func onPacket(es *duey.EventStreamer, handlers map[uint16]handler.PacketHandler) func(*tcpserve.Session, []byte) {
 	return func(s *tcpserve.Session, data []byte) {
 		var p packet.Packet
 		p.WriteBytes(data)
 
-		handlers := make(map[uint16]handler.PacketHandler)
-		handlers[handler.OpCodeCheckPassword] = &handler.HandlerCheckPassword{}
-		handlers[handler.OpCodeWorldRequest] = &handler.HandlerWorldRequest{}
-
 		header := p.ReadShort()
-		handlers[header].Handle(s, es, p)
-		// header := p.ReadShort()
-		// switch header {
-		// case 0x01: // LOGIN_PASSWORD
-		// 	auth.HandleLogin(s, es, p)
-		// case 0x1A: // EXCEPTION_LOG
-		// 	_, msg := p.ReadString()
-		// 	log.Println("Received exception log from client:", msg)
-		// default:
-		// 	log.Printf("Unhandled Packet (Header: % X): %s", header, p)
-		// }
 
+		// Check if header has a handler
+		if h, ok := handlers[header]; ok {
+			log.Printf("Handling %s: [%X] % X\n", h.Name(), header, p)
+			h.Handle(s, es, p)
+		} else {
+			log.Printf("Unhandled Packet: [%X] %s\n", header, p)
+		}
 	}
+}
+
+func InitHandlers() map[uint16]handler.PacketHandler {
+	// Create handler collection
+	handlers := make(map[uint16]handler.PacketHandler)
+	addHandler := func(opcode uint16, h handler.PacketHandler) {
+		handlers[opcode] = h
+	}
+
+	addHandler(handler.OpCodeCheckPassword, &handler.HandlerCheckPassword{}) // 0x00
+	addHandler(handler.OpCodeWorldRequest, &handler.HandlerWorldRequest{})   // 0xB
+
+	return handlers
 }
 
 func BuildServer(wg sync.WaitGroup, s *duey.EventStreamer) *tcpserve.Server {
@@ -64,11 +69,13 @@ func BuildServer(wg sync.WaitGroup, s *duey.EventStreamer) *tcpserve.Server {
 		log.Println(msg)
 	}
 
+	handlers := InitHandlers()
+
 	server := tcpserve.NewServer(
 		tcpserve.WithPort(PORT),
 		tcpserve.WithLoggers(logger, nil),
 		tcpserve.WithOnConnected(onConnected),
-		tcpserve.WithOnPacket(onPacket(s)),
+		tcpserve.WithOnPacket(onPacket(s, handlers)),
 	)
 	server.Start(wg)
 

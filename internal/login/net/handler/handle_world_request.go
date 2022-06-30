@@ -12,7 +12,7 @@ type HandlerWorldRequest struct {
 }
 
 func (h *HandlerWorldRequest) Name() string {
-	return ""
+	return "WorldRequest"
 }
 func (h *HandlerWorldRequest) Handle(*tcpserve.Session, *duey.EventStreamer, packet.Packet) []byte {
 
