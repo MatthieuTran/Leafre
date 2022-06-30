@@ -1,23 +1,30 @@
 package auth
 
 import (
-	"github.com/matthieutran/leafre-login/internal/login/net/handler/auth/operation"
+	"log"
+
+	"github.com/matthieutran/duey"
+	"github.com/matthieutran/leafre-login/pkg/operation"
 	"github.com/matthieutran/packet"
+	"github.com/matthieutran/tcpserve"
 )
 
 type LoginRequest struct {
-	username string
-	password string
-	hwid     []byte
+	Username string
+	Password string
+	Hwid     []byte
 }
 
-func HandleLogin(p packet.Packet) {
-	req := readLogin(p)    // Read packet and create LoginRequest struct
-	op := req.checkLogin() // Check login
+func HandleLogin(s *tcpserve.Session, es *duey.EventStreamer, p packet.Packet) {
+	req := readLogin(p)        // Read packet and create LoginRequest struct
+	res := checkLogin(es, req) // Check login
+	log.Println(res)
 
-	switch op {
+	switch res.Code {
 	case operation.Success:
-		req.sendSuccess()
+		sendSuccess(s, res, req.Username)
+	default:
+		sendFailed(s, res)
 	}
 }
 
@@ -33,20 +40,43 @@ func readLogin(p packet.Packet) *LoginRequest {
 	_ = p.ReadInt()               // PartnerCode
 
 	return &LoginRequest{
-		username: username,
-		password: password,
-		hwid:     hwid,
+		Username: username,
+		Password: password,
+		Hwid:     hwid,
 	}
 }
 
-// checkLogin validates a login and returns a `LoginRequestCode`
-func (s *LoginRequest) checkLogin() operation.LoginRequestCode {
-	return operation.Success
+func sendFailed(s *tcpserve.Session, res loginResponse) {
+	p := packet.Packet{}
+	p.WriteShort(0)             // Header
+	p.WriteByte(byte(res.Code)) // Result
+	p.WriteByte(0)              // Unknown1
+	p.WriteInt(0)               // Unknown2
+	s.Write(p.Bytes())
 }
 
 // sendSuccess announces to the client that login was successful
-func (s *LoginRequest) sendSuccess() {
-	// response struct
+func sendSuccess(s *tcpserve.Session, res loginResponse, username string) {
+	p := packet.Packet{}
+	p.WriteShort(0x00)
+	p.WriteByte(byte(res.Code)) // Result
+	p.WriteByte(0)              // Unknown1
+	p.WriteInt(0)               // Unknown2
+	p.WriteInt(uint32(res.Id))  // AccountID
+	p.WriteByte(0)              // Gender TODO: change me
+	p.WriteByte(0)              // AdminLevel
+	p.WriteShort(0)             // GM Level
+	p.WriteByte(0)              // nCountryID
+	p.WriteString(username)     // sNexonClubID
+	p.WriteByte(0)              // nPurchaseEXP
+	p.WriteByte(0)              // ChatUnblockReason
+	p.WriteLong(0)              // dtChatUnblockDate
+	p.WriteLong(0)              // dtRegisterDate
+	p.WriteInt(4)               // nNumOfCharacter
+	p.WriteByte(1)              // v44
+	p.WriteByte(0)              // sMsg
+	p.WriteLong(0)              // session key (for preventing remote hacks)
+	s.Write(p.Bytes())
 
 	/**
 	byte - result
