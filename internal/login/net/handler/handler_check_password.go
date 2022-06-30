@@ -2,9 +2,9 @@ package handler
 
 import (
 	"log"
-	"time"
 
 	"github.com/matthieutran/duey"
+	"github.com/matthieutran/leafre-login/internal/login/messaging/command"
 	"github.com/matthieutran/leafre-login/pkg/operation"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
@@ -19,9 +19,8 @@ func (h *HandlerCheckPassword) Name() string {
 	return "CheckPassword"
 }
 func (h *HandlerCheckPassword) Handle(s *tcpserve.Session, es *duey.EventStreamer, p packet.Packet) []byte {
-	req := readLogin(p)        // Read packet and create LoginRequest struct
-	res := checkLogin(es, req) // Check login
-	log.Println(res)
+	req := readLogin(p)                // Read packet and create LoginRequest struct
+	res := command.CheckLogin(es, req) // Request login validation through event
 
 	switch res.Code {
 	case operation.Success:
@@ -32,26 +31,8 @@ func (h *HandlerCheckPassword) Handle(s *tcpserve.Session, es *duey.EventStreame
 	return []byte{}
 }
 
-type loginResponse struct {
-	Code operation.LoginRequestCode
-	Id   int
-}
-
-func checkLogin(es *duey.EventStreamer, payload *loginRequest) loginResponse {
-	var res loginResponse
-	es.Request("auth.login", &payload, &res, 5*time.Second)
-
-	return res
-}
-
-type loginRequest struct {
-	Username  string
-	Password  string
-	MachineId []byte
-}
-
 // readLogin parses the packet into a processable struct
-func readLogin(p packet.Packet) *loginRequest {
+func readLogin(p packet.Packet) *command.RequestLogin {
 	_, username := p.ReadString() // Username
 	_, password := p.ReadString() // Password
 	machineId := p.ReadBytes(16)  // Machine ID
@@ -61,14 +42,14 @@ func readLogin(p packet.Packet) *loginRequest {
 	_ = p.ReadBytes(1)            // Unknown2
 	_ = p.ReadInt()               // PartnerCode
 
-	return &loginRequest{
+	return &command.RequestLogin{
 		Username:  username,
 		Password:  password,
 		MachineId: machineId,
 	}
 }
 
-func sendFailed(s *tcpserve.Session, res loginResponse) {
+func sendFailed(s *tcpserve.Session, res command.ResponseLogin) {
 	p := packet.Packet{}
 	p.WriteShort(0)             // Header
 	p.WriteByte(byte(res.Code)) // Result
@@ -78,7 +59,7 @@ func sendFailed(s *tcpserve.Session, res loginResponse) {
 }
 
 // sendSuccess announces to the client that login was successful
-func sendSuccess(s *tcpserve.Session, res loginResponse, username string) {
+func sendSuccess(s *tcpserve.Session, res command.ResponseLogin, username string) {
 	p := packet.Packet{}
 	p.WriteShort(0x00)
 	p.WriteByte(byte(res.Code)) // Result
