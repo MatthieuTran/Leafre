@@ -1,8 +1,9 @@
 package writer
 
 import (
+	"io"
+
 	"github.com/matthieutran/packet"
-	"github.com/matthieutran/tcpserve"
 )
 
 var OpCodeCheckPasswordResult uint16 = 0x0
@@ -51,7 +52,7 @@ const (
 	LoginRequestOTPInfoNotExist                    CodeLoginRequest = 0x24
 )
 
-func WriteCheckPasswordResult(s *tcpserve.Session, res CodeLoginRequest, id int, username string) {
+func WriteCheckPasswordResult(s io.Writer, res CodeLoginRequest, id int, username string) {
 	p := packet.Packet{}
 	p.WriteShort(OpCodeCheckPasswordResult) // Header
 	p.WriteByte(byte(res))                  // Result

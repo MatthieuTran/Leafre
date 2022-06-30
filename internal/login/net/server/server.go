@@ -8,7 +8,6 @@ import (
 	"github.com/matthieutran/duey"
 	"github.com/matthieutran/leafre-login/internal/login/net/codec"
 	"github.com/matthieutran/leafre-login/internal/login/net/server/handler"
-	announcer "github.com/matthieutran/leafre-login/internal/login/net/server/writer"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
 )
@@ -20,6 +19,18 @@ const (
 	PORT          = 8484
 )
 
+func formHandshake(majorVersion uint16, minorVersion string, ivRecv, ivSend [4]byte, locale byte) []byte {
+	p := packet.Packet{}
+	p.WriteShort(14)            // Length of packet
+	p.WriteShort(majorVersion)  // Maple Version (83)
+	p.WriteString(minorVersion) // Subversion (1)
+	p.WriteBytes(ivRecv[:])     // Recv IV
+	p.WriteBytes(ivSend[:])     // Send IV
+	p.WriteByte(locale)         // Maple Locale (8)
+
+	return p.Bytes()
+}
+
 func onConnected(s *tcpserve.Session) {
 	var ivRecv, ivSend [4]byte // IV Keys for the codec
 	rand.Read(ivRecv[:])       // Randomize recv key
@@ -30,7 +41,7 @@ func onConnected(s *tcpserve.Session) {
 	s.SetDecrypter(decrypter)
 
 	// Send handshake
-	handshakePacket := announcer.WriteHandshake(VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
+	handshakePacket := formHandshake(VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
 	s.WriteRaw(handshakePacket)
 }
 
