@@ -39,8 +39,6 @@ func onPacket(es *duey.EventStreamer) func(*tcpserve.Session, []byte) {
 		var p packet.Packet
 		p.WriteBytes(data)
 
-		log.Println(p)
-
 		header := p.ReadShort()
 		switch header {
 		case 0x01: // LOGIN_PASSWORD
@@ -48,6 +46,8 @@ func onPacket(es *duey.EventStreamer) func(*tcpserve.Session, []byte) {
 		case 0x1A: // EXCEPTION_LOG
 			_, msg := p.ReadString()
 			log.Println("Received exception log from client:", msg)
+		default:
+			log.Printf("Unhandled Packet (Header: % X): %s", header, p)
 		}
 
 	}
