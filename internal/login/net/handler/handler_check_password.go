@@ -1,7 +1,8 @@
-package auth
+package handler
 
 import (
 	"log"
+	"time"
 
 	"github.com/matthieutran/duey"
 	"github.com/matthieutran/leafre-login/pkg/operation"
@@ -9,13 +10,15 @@ import (
 	"github.com/matthieutran/tcpserve"
 )
 
-type LoginRequest struct {
-	Username string
-	Password string
-	Hwid     []byte
+const OpCodeCheckPassword uint16 = 0x0
+
+type HandlerCheckPassword struct {
 }
 
-func HandleLogin(s *tcpserve.Session, es *duey.EventStreamer, p packet.Packet) {
+func (h *HandlerCheckPassword) Name() string {
+	return ""
+}
+func (h *HandlerCheckPassword) Handle(s *tcpserve.Session, es *duey.EventStreamer, p packet.Packet) []byte {
 	req := readLogin(p)        // Read packet and create LoginRequest struct
 	res := checkLogin(es, req) // Check login
 	log.Println(res)
@@ -26,23 +29,42 @@ func HandleLogin(s *tcpserve.Session, es *duey.EventStreamer, p packet.Packet) {
 	default:
 		sendFailed(s, res)
 	}
+	return []byte{}
+}
+
+type loginResponse struct {
+	Code operation.LoginRequestCode
+	Id   int
+}
+
+func checkLogin(es *duey.EventStreamer, payload *loginRequest) loginResponse {
+	var res loginResponse
+	es.Request("auth.login", &payload, &res, 5*time.Second)
+
+	return res
+}
+
+type loginRequest struct {
+	Username  string
+	Password  string
+	MachineId []byte
 }
 
 // readLogin parses the packet into a processable struct
-func readLogin(p packet.Packet) *LoginRequest {
+func readLogin(p packet.Packet) *loginRequest {
 	_, username := p.ReadString() // Username
 	_, password := p.ReadString() // Password
-	hwid := p.ReadBytes(16)       // Machine ID
+	machineId := p.ReadBytes(16)  // Machine ID
 	_ = p.ReadInt()               // Game Room Client
 	_ = p.ReadBytes(1)            // GameStartMode
 	_ = p.ReadBytes(1)            // Unknown1
 	_ = p.ReadBytes(1)            // Unknown2
 	_ = p.ReadInt()               // PartnerCode
 
-	return &LoginRequest{
-		Username: username,
-		Password: password,
-		Hwid:     hwid,
+	return &loginRequest{
+		Username:  username,
+		Password:  password,
+		MachineId: machineId,
 	}
 }
 

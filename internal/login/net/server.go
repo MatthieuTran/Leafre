@@ -7,7 +7,7 @@ import (
 
 	"github.com/matthieutran/duey"
 	"github.com/matthieutran/leafre-login/internal/login/net/codec"
-	"github.com/matthieutran/leafre-login/internal/login/net/handler/auth"
+	"github.com/matthieutran/leafre-login/internal/login/net/handler"
 	"github.com/matthieutran/leafre-login/internal/login/net/writer"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
@@ -39,16 +39,22 @@ func onPacket(es *duey.EventStreamer) func(*tcpserve.Session, []byte) {
 		var p packet.Packet
 		p.WriteBytes(data)
 
+		handlers := make(map[uint16]handler.PacketHandler)
+		handlers[handler.OpCodeCheckPassword] = &handler.HandlerCheckPassword{}
+		handlers[handler.OpCodeWorldRequest] = &handler.HandlerWorldRequest{}
+
 		header := p.ReadShort()
-		switch header {
-		case 0x01: // LOGIN_PASSWORD
-			auth.HandleLogin(s, es, p)
-		case 0x1A: // EXCEPTION_LOG
-			_, msg := p.ReadString()
-			log.Println("Received exception log from client:", msg)
-		default:
-			log.Printf("Unhandled Packet (Header: % X): %s", header, p)
-		}
+		handlers[header].Handle(s, es, p)
+		// header := p.ReadShort()
+		// switch header {
+		// case 0x01: // LOGIN_PASSWORD
+		// 	auth.HandleLogin(s, es, p)
+		// case 0x1A: // EXCEPTION_LOG
+		// 	_, msg := p.ReadString()
+		// 	log.Println("Received exception log from client:", msg)
+		// default:
+		// 	log.Printf("Unhandled Packet (Header: % X): %s", header, p)
+		// }
 
 	}
 }
