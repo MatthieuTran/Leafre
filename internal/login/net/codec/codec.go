@@ -4,19 +4,20 @@ import (
 	"github.com/matthieutran/crypto"
 )
 
-func GenerateCodecs(version int, ivRecv, ivSend [4]byte) (encrypter, decrypter func(d []byte)) {
+func GenerateCodecs(version int, ivRecv, ivSend [4]byte) (encrypter, decrypter func(d []byte) []byte) {
 	// Create codecs
-	recv := crypto.NewCodec(ivRecv, version)
-	send := crypto.NewCodec(ivSend, version)
+	c := crypto.NewCodec(ivRecv, ivSend, version)
 
 	// Create encrypter
-	encrypter = func(d []byte) {
-		send.Encrypt(d, true, true)
+	encrypter = func(d []byte) (res []byte) {
+		res, _ = c.Encrypt(d, true, true)
+		return
 	}
 
 	// Create decrypter
-	decrypter = func(d []byte) {
-		recv.Decrypt(d, true, true)
+	decrypter = func(d []byte) (res []byte) {
+		res, _ = c.Decrypt(d, true, true)
+		return
 	}
 
 	return
