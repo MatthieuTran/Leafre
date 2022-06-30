@@ -1,8 +1,8 @@
-package announcer
+package writer
 
 import "github.com/matthieutran/packet"
 
-func AnnounceHandshake(majorVersion uint16, minorVersion string, ivRecv, ivSend [4]byte, locale byte) []byte {
+func WriteHandshake(majorVersion uint16, minorVersion string, ivRecv, ivSend [4]byte, locale byte) []byte {
 	p := packet.Packet{}
 	p.WriteShort(14)            // Length of packet
 	p.WriteShort(majorVersion)  // Maple Version (83)

@@ -7,8 +7,8 @@ import (
 
 	"github.com/matthieutran/duey"
 	"github.com/matthieutran/leafre-login/internal/login/net/codec"
-	"github.com/matthieutran/leafre-login/internal/login/net/server/announcer"
 	"github.com/matthieutran/leafre-login/internal/login/net/server/handler"
+	announcer "github.com/matthieutran/leafre-login/internal/login/net/server/writer"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
 )
@@ -30,7 +30,7 @@ func onConnected(s *tcpserve.Session) {
 	s.SetDecrypter(decrypter)
 
 	// Send handshake
-	handshakePacket := announcer.AnnounceHandshake(VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
+	handshakePacket := announcer.WriteHandshake(VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
 	s.WriteRaw(handshakePacket)
 }
 
@@ -43,7 +43,7 @@ func onPacket(es *duey.EventStreamer, handlers map[uint16]handler.PacketHandler)
 
 		// Check if header has a handler
 		if h, ok := handlers[header]; ok {
-			log.Printf("Handling %s: [%X] % X\n", h.Name(), header, p)
+			log.Printf("Handling %s: [%X] %s\n", h, header, p)
 			h.Handle(s, es, p)
 		} else {
 			log.Printf("Unhandled Packet: [%X] %s\n", header, p)

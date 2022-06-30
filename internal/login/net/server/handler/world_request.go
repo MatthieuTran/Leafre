@@ -11,10 +11,10 @@ const OpCodeWorldRequest uint16 = 0xB
 type HandlerWorldRequest struct {
 }
 
-func (h *HandlerWorldRequest) Name() string {
-	return "WorldRequest"
-}
-func (h *HandlerWorldRequest) Handle(*tcpserve.Session, *duey.EventStreamer, packet.Packet) []byte {
+func (h *HandlerWorldRequest) Handle(*tcpserve.Session, *duey.EventStreamer, packet.Packet) {
 
-	return []byte{}
+}
+
+func (h *HandlerWorldRequest) String() string {
+	return "WorldRequest"
 }

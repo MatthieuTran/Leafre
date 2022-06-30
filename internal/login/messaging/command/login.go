@@ -4,17 +4,16 @@ import (
 	"time"
 
 	"github.com/matthieutran/duey"
-	"github.com/matthieutran/leafre-login/pkg/operation"
+	"github.com/matthieutran/leafre-login/internal/login/net/server/writer"
 )
 
 type RequestLogin struct {
-	Username  string
-	Password  string
-	MachineId []byte
+	Username string
+	Password string
 }
 
 type ResponseLogin struct {
-	Code operation.LoginRequestCode
+	Code writer.CodeLoginRequest
 	Id   int
 }
 
