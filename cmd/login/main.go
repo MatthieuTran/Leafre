@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/matthieutran/leafre-login/internal/login/messaging"
-	"github.com/matthieutran/leafre-login/internal/login/net"
+	"github.com/matthieutran/leafre-login/internal/login/net/server"
 )
 
 func main() {
@@ -14,12 +14,12 @@ func main() {
 
 	log.Println("Leafre - Login Server")
 
-	s := messaging.Init(os.Getenv("NATS_URI"))
+	es := messaging.Init(os.Getenv("NATS_URI"))
 
 	// Create socket
-	server := net.BuildServer(wg, s)
+	s := server.BuildServer(wg, es)
 	wg.Add(1)
-	server.Start(wg)
+	s.Start(wg)
 
 	// Block until all goroutines are done
 	wg.Wait()

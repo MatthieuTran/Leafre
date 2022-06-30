@@ -1,4 +1,4 @@
-package net
+package server
 
 import (
 	"crypto/rand"
@@ -7,8 +7,8 @@ import (
 
 	"github.com/matthieutran/duey"
 	"github.com/matthieutran/leafre-login/internal/login/net/codec"
-	"github.com/matthieutran/leafre-login/internal/login/net/handler"
-	"github.com/matthieutran/leafre-login/internal/login/net/writer"
+	"github.com/matthieutran/leafre-login/internal/login/net/server/announcer"
+	"github.com/matthieutran/leafre-login/internal/login/net/server/handler"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
 )
@@ -30,7 +30,7 @@ func onConnected(s *tcpserve.Session) {
 	s.SetDecrypter(decrypter)
 
 	// Send handshake
-	handshakePacket := writer.WriteHandshake(VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
+	handshakePacket := announcer.AnnounceHandshake(VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
 	s.WriteRaw(handshakePacket)
 }
 
