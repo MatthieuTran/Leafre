@@ -5,14 +5,14 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 RUN go test ./...
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server ./cmd/login
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o login-service ./cmd/login
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
-COPY --from=builder /app/server .
+COPY --from=builder /app/login-service .
 EXPOSE 8484
 
-CMD ["./server"]
+CMD ["./login-service"]
 
 
