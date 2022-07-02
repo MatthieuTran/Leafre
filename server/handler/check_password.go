@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/matthieutran/duey"
-	"github.com/matthieutran/leafre-login/internal/login/messaging/command"
-	"github.com/matthieutran/leafre-login/internal/login/net/server/reader"
-	"github.com/matthieutran/leafre-login/internal/login/net/server/writer"
+	"github.com/matthieutran/leafre-login/messaging/command"
+	"github.com/matthieutran/leafre-login/server/reader"
+	"github.com/matthieutran/leafre-login/server/writer"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
 )

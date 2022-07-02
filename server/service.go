@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"github.com/matthieutran/duey"
-	"github.com/matthieutran/leafre-login/internal/login/net/codec"
-	"github.com/matthieutran/leafre-login/internal/login/net/server/handler"
+	"github.com/matthieutran/leafre-login/codec"
+	"github.com/matthieutran/leafre-login/server/handler"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
 )

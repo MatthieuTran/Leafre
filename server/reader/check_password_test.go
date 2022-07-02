@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/matthieutran/leafre-login/internal/login/net/server/reader"
+	"github.com/matthieutran/leafre-login/server/reader"
 	"github.com/matthieutran/packet"
 )
 

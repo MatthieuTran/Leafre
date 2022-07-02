@@ -18,4 +18,6 @@ func FetchAll() (w login.Worlds, err error) {
 }
 
 // Change the specified world's state
-func SetWorldState(id int, state byte)
+func SetWorldState(id int, state byte) {
+
+}

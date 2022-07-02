@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/matthieutran/duey"
-	"github.com/matthieutran/leafre-login/internal/login/net/server/writer"
+	"github.com/matthieutran/leafre-login/server/writer"
 )
 
 type RequestLogin struct {

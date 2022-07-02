@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/matthieutran/leafre-login/internal/login/net/server/writer"
+	"github.com/matthieutran/leafre-login/server/writer"
 )
 
 // TestWriteCheckPasswordResultNotSuccess tests that the writer should receive the auth fail result only.

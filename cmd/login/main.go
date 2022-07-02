@@ -5,8 +5,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/matthieutran/leafre-login/internal/login/messaging"
-	"github.com/matthieutran/leafre-login/internal/login/net/server"
+	"github.com/matthieutran/leafre-login/messaging"
+	"github.com/matthieutran/leafre-login/server"
 )
 
 func main() {
