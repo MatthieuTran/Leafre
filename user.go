@@ -1,4 +1,4 @@
-package auth
+package login
 
 // An AuthUser is an instance of the user object that we get back from the auth service
 type AuthUser struct {
