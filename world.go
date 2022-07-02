@@ -2,13 +2,13 @@ package login
 
 type World struct {
 	// ID of the world
-	Id int `json:id`
+	Id int `json:"id"`
 	// Name of the world
-	Name string `json:name`
+	Name string `json:"name"`
 	// State of the world (0: Nothing, 1: Event, 2: New, 3: Hot)
-	State byte `json:state`
+	State byte `json:"state"`
 	// Flag to stop characters from being created
-	BlockCharCreation bool `json:block_char_creation`
+	BlockCharCreation bool `json:"block_char_creation"`
 }
 
 type Worlds []World

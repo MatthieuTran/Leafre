@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/matthieutran/crypto v0.0.0-20220629225111-893943ba2647
 	github.com/matthieutran/duey v0.0.0-20220628111516-ce0cd3c6d1bc
-	github.com/matthieutran/packet v0.0.0-20220624154820-ed9619a858fc
+	github.com/matthieutran/packet v0.0.0-20220702170150-9ff769042c41
 	github.com/matthieutran/tcpserve v0.1.5-0.20220702041437-3e909aed763b
 )
 

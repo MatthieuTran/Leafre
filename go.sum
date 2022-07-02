@@ -15,6 +15,8 @@ github.com/matthieutran/duey v0.0.0-20220628111516-ce0cd3c6d1bc h1:4QcNUkTMPOV21
 github.com/matthieutran/duey v0.0.0-20220628111516-ce0cd3c6d1bc/go.mod h1:ezspczYd7CKqn64RZoHfyuEOoLNHqOO6Pj0ozoqrJvM=
 github.com/matthieutran/packet v0.0.0-20220624154820-ed9619a858fc h1:NYDVMPUPaIUUVJEQOe+wRPFP4vRMJsYfoXbzLAmRtnA=
 github.com/matthieutran/packet v0.0.0-20220624154820-ed9619a858fc/go.mod h1:s4VTZcSDUqG8TYeUDxHeYjR2h72DyWhZi2/xh6PZX48=
+github.com/matthieutran/packet v0.0.0-20220702170150-9ff769042c41 h1:cUGQcdWGanEQCrjYEEMeuSF9wy7e+W8BDoGKjwTx32o=
+github.com/matthieutran/packet v0.0.0-20220702170150-9ff769042c41/go.mod h1:s4VTZcSDUqG8TYeUDxHeYjR2h72DyWhZi2/xh6PZX48=
 github.com/matthieutran/tcpserve v0.1.5-0.20220629214829-d833ee3cc370 h1:TY1d6fmzHLuhjOeHJjrIpJhZa80oRg0vrqc1D7mhguA=
 github.com/matthieutran/tcpserve v0.1.5-0.20220629214829-d833ee3cc370/go.mod h1:BNvDTlVVnLtCFBcXa4MhH/Y7VEG+Nj8TVelHUa5DFp4=
 github.com/matthieutran/tcpserve v0.1.5-0.20220629215529-f29a9f309901 h1:ZNeup6+DHLme4mfzZYVdiE411vRmPHyOlDXzVwqOivo=
