@@ -1,10 +1,14 @@
 package login
 
 type World struct {
-	Id                int    // ID of the world
-	Name              string // Name of the world
-	State             byte   // State of the world (0: Nothing, 1: Event, 2: New, 3: Hot)
-	BlockCharCreation bool   // Flag to stop characters from being created
+	// ID of the world
+	Id int `json:id`
+	// Name of the world
+	Name string `json:name`
+	// State of the world (0: Nothing, 1: Event, 2: New, 3: Hot)
+	State byte `json:state`
+	// Flag to stop characters from being created
+	BlockCharCreation bool `json:block_char_creation`
 }
 
 type Worlds []World

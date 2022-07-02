@@ -6,14 +6,14 @@ import (
 
 // RecvCheckLogin defines the structure returned by the client including the client's username and password
 type RecvCheckLogin struct {
-	Username       string
-	Password       string
-	MachineId      []byte
-	GameRoomClient int
-	GameStartMode  byte
-	Unknown1       byte
-	Unknown2       byte
-	PartnerCode    int
+	Username       string `json:"username"`
+	Password       string `json:"password"`
+	MachineId      []byte `json:"machine_id"`
+	GameRoomClient int    `json:"game_room_client"`
+	GameStartMode  byte   `json:"game_start_mode"`
+	Unknown1       byte   `json:"unknown1"`
+	Unknown2       byte   `json:"unknown2"`
+	PartnerCode    int    `json:"partner_code"`
 }
 
 // ReadLogin parses the packet into a processable struct

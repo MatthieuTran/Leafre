@@ -8,13 +8,13 @@ import (
 )
 
 type RequestLogin struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type ResponseLogin struct {
-	Code writer.CodeLoginRequest
-	Id   int
+	Code writer.CodeLoginRequest `json:"code"`
+	Id   int                     `json:"id"`
 }
 
 func CheckLogin(es *duey.EventStreamer, payload *RequestLogin) ResponseLogin {
