@@ -52,7 +52,7 @@ const (
 	LoginRequestOTPInfoNotExist                    CodeLoginRequest = 0x24
 )
 
-func WriteCheckPasswordResult(s io.Writer, res CodeLoginRequest, id int, username string) {
+func WriteCheckPasswordResult(w io.Writer, res CodeLoginRequest, id int, username string) {
 	p := packet.Packet{}
 	p.WriteShort(OpCodeCheckPasswordResult) // Header
 	p.WriteByte(byte(res))                  // Result
@@ -76,7 +76,7 @@ func WriteCheckPasswordResult(s io.Writer, res CodeLoginRequest, id int, usernam
 		p.WriteLong(0)          // session key (for preventing remote hacks)
 	}
 
-	s.Write(p.Bytes())
+	w.Write(p.Bytes())
 }
 
 /**

@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"io"
+
 	"github.com/matthieutran/duey"
 	"github.com/matthieutran/packet"
-	"github.com/matthieutran/tcpserve"
 )
 
 const OpCodeWorldRequest uint16 = 0xB
@@ -11,7 +12,7 @@ const OpCodeWorldRequest uint16 = 0xB
 type HandlerWorldRequest struct {
 }
 
-func (h *HandlerWorldRequest) Handle(*tcpserve.Session, *duey.EventStreamer, packet.Packet) {
+func (h *HandlerWorldRequest) Handle(w io.Writer, es *duey.EventStreamer, p packet.Packet) {
 
 }
 
