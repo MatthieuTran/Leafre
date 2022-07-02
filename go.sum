@@ -27,6 +27,8 @@ github.com/matthieutran/tcpserve v0.1.5-0.20220629225929-dc089af10232 h1:TDVKRwa
 github.com/matthieutran/tcpserve v0.1.5-0.20220629225929-dc089af10232/go.mod h1:BNvDTlVVnLtCFBcXa4MhH/Y7VEG+Nj8TVelHUa5DFp4=
 github.com/matthieutran/tcpserve v0.1.5-0.20220629230535-b5b927e9aac9 h1:gXbDOQU4edac4DbUSzCckOdL0Zl3pFNRKA8/Ydod6JE=
 github.com/matthieutran/tcpserve v0.1.5-0.20220629230535-b5b927e9aac9/go.mod h1:BNvDTlVVnLtCFBcXa4MhH/Y7VEG+Nj8TVelHUa5DFp4=
+github.com/matthieutran/tcpserve v0.1.5-0.20220702041437-3e909aed763b h1:oC13Aly4YK5WjStUZN4XCY8eik/eHTPq+CkPSEVAPiM=
+github.com/matthieutran/tcpserve v0.1.5-0.20220702041437-3e909aed763b/go.mod h1:BNvDTlVVnLtCFBcXa4MhH/Y7VEG+Nj8TVelHUa5DFp4=
 github.com/minio/highwayhash v1.0.2 h1:Aak5U0nElisjDCfPSG79Tgzkn2gl66NxOMspRrKnA/g=
 github.com/minio/highwayhash v1.0.2/go.mod h1:BQskDq+xkJ12lmlUUi7U0M5Swg3EWR+dLTk+kldvVxY=
 github.com/nats-io/jwt/v2 v2.3.0 h1:z2mA1a7tIf5ShggOFlR1oBPgd6hGqcDYsISxZByUzdI=

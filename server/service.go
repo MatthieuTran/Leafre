@@ -75,7 +75,7 @@ func InitHandlers() map[uint16]handler.PacketHandler {
 	return handlers
 }
 
-func BuildServer(wg sync.WaitGroup, s *duey.EventStreamer) *tcpserve.Server {
+func BuildServer(wg *sync.WaitGroup, s *duey.EventStreamer) *tcpserve.Server {
 	logger := func(msg string) {
 		log.Println(msg)
 	}
