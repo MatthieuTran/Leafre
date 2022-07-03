@@ -26,6 +26,6 @@ type UserRepository interface {
 	// Login validates the login details in the `UserForm` object and returns the user's object and error (where applicable)
 	Login(UserForm) (user User, code operation.CodeLoginRequest)
 
-	//GetById fetches a user by its ID
+	// GetById fetches a user by its ID
 	GetById(int) (user User, err error)
 }
