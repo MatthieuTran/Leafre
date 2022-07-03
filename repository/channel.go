@@ -11,19 +11,38 @@ func NewChannelRepostory() ChannelRepository {
 }
 
 // FetchAll gets a list of all active channels
-func FetchAll() (login.Channels, error) {
+func (r ChannelRepository) FetchAll() (login.Channels, error) {
 	return login.Channels{
-		{
+		{ // Scania, Ch 1
 			Id:           "0",
 			UserNo:       0,
 			WorldId:      0,
 			ChannelId:    0,
 			AdultChannel: false,
 		},
+		{ // SomeOtherWorld, Ch 1
+			Id:           "1",
+			UserNo:       0,
+			WorldId:      1, // NOTE different world id ^
+			ChannelId:    0,
+			AdultChannel: false,
+		},
 	}, nil
 }
 
+// FetchAllById gets a list of all active channels under a specified world
+func (r ChannelRepository) FetchAllbyId(worldId byte) (res login.Channels, err error) {
+	channels, err := r.FetchAll()
+	for _, channel := range channels {
+		if channel.WorldId == worldId {
+			res = append(res, channel)
+		}
+	}
+
+	return
+}
+
 // SetAdultChannel changes the adult flag to true or false for the specified channel id
-func SetAdultChannel(id int, flag bool) {
+func (r ChannelRepository) SetAdultChannel(id int, flag bool) {
 
 }

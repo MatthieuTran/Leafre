@@ -2,7 +2,7 @@ package login
 
 type World struct {
 	// ID of the world
-	Id int `json:"id"`
+	Id byte `json:"id"`
 	// Name of the world
 	Name string `json:"name"`
 	// State of the world (0: Nothing, 1: Event, 2: New, 3: Hot)
