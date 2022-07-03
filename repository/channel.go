@@ -18,14 +18,14 @@ func (r ChannelRepository) FetchAll() (login.Channels, error) {
 			UserNo:       0,
 			WorldId:      0,
 			ChannelId:    0,
-			AdultChannel: false,
+			AdultChannel: 0,
 		},
 		{ // SomeOtherWorld, Ch 1
 			Id:           "1",
 			UserNo:       0,
 			WorldId:      1, // NOTE different world id ^
 			ChannelId:    0,
-			AdultChannel: false,
+			AdultChannel: 0,
 		},
 	}, nil
 }

@@ -10,7 +10,7 @@ type Channel struct {
 	// ID of the channel (according to the world)
 	ChannelId byte `json:"world_channel_id"`
 	// Adult Channel (18+)
-	AdultChannel bool `json:"adult_channel"`
+	AdultChannel byte `json:"adult_channel"`
 }
 
 type Channels []Channel
