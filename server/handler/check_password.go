@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/matthieutran/duey"
-	"github.com/matthieutran/leafre-login/messaging/command"
+	login "github.com/matthieutran/leafre-login"
 	"github.com/matthieutran/leafre-login/server/reader"
 	"github.com/matthieutran/leafre-login/server/writer"
 	"github.com/matthieutran/packet"
@@ -13,14 +13,25 @@ import (
 const OpCodeCheckPassword uint16 = 0x1
 
 type HandlerCheckPassword struct {
+	userRepository login.UserRepository
+}
+
+func NewHandlerCheckPassword(userRepository login.UserRepository) HandlerCheckPassword {
+	return HandlerCheckPassword{
+		userRepository: userRepository,
+	}
 }
 
 func (h *HandlerCheckPassword) Handle(w io.Writer, es *duey.EventStreamer, p packet.Packet) {
 	payload := reader.ReadLogin(p)
-	req := &command.RequestLogin{Username: payload.Username, Password: payload.Password} // Read packet and create LoginRequest struct
-	res := command.CheckLogin(es, req)                                                   // Request login validation through event
+	user, code := h.userRepository.Login(
+		login.UserForm{
+			Username: payload.Username,
+			Password: payload.Password,
+		},
+	)
 
-	writer.WriteCheckPasswordResult(w, res.Code, res.Id, payload.Username)
+	writer.WriteCheckPasswordResult(w, code, user)
 }
 
 func (h *HandlerCheckPassword) String() string {

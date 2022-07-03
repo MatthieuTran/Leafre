@@ -7,6 +7,7 @@ import (
 
 	"github.com/matthieutran/duey"
 	"github.com/matthieutran/leafre-login/codec"
+	"github.com/matthieutran/leafre-login/repository"
 	"github.com/matthieutran/leafre-login/server/handler"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
@@ -62,31 +63,38 @@ func onPacket(es *duey.EventStreamer, handlers map[uint16]handler.PacketHandler)
 	}
 }
 
-func InitHandlers() map[uint16]handler.PacketHandler {
+func InitHandlers(es *duey.EventStreamer) map[uint16]handler.PacketHandler {
 	// Create handler collection
 	handlers := make(map[uint16]handler.PacketHandler)
 	addHandler := func(opcode uint16, h handler.PacketHandler) {
 		handlers[opcode] = h
 	}
 
-	addHandler(handler.OpCodeCheckPassword, &handler.HandlerCheckPassword{}) // 0x00
-	addHandler(handler.OpCodeWorldRequest, &handler.HandlerWorldRequest{})   // 0xB
+	// Inject event streamer into the repository
+	userRepository := repository.NewUserRepository(es)
+
+	// Inject repository dependencies into handlers
+	handlerCheckPassword := handler.NewHandlerCheckPassword(userRepository)
+
+	addHandler(handler.OpCodeCheckPassword, &handlerCheckPassword)         // 0x00
+	addHandler(handler.OpCodeWorldRequest, &handler.HandlerWorldRequest{}) // 0xB
 
 	return handlers
 }
 
-func BuildServer(wg *sync.WaitGroup, s *duey.EventStreamer) *tcpserve.Server {
+func BuildServer(wg *sync.WaitGroup, es *duey.EventStreamer) *tcpserve.Server {
 	logger := func(msg string) {
 		log.Println(msg)
 	}
 
-	handlers := InitHandlers()
+	// Initialize handlers
+	handlers := InitHandlers(es) // the event streamer is injected here
 
 	server := tcpserve.NewServer(
 		tcpserve.WithPort(PORT),
 		tcpserve.WithLoggers(logger, nil),
 		tcpserve.WithOnConnected(onConnected),
-		tcpserve.WithOnPacket(onPacket(s, handlers)),
+		tcpserve.WithOnPacket(onPacket(es, handlers)),
 	)
 	server.Start(wg)
 

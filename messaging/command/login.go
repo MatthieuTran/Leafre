@@ -4,20 +4,16 @@ import (
 	"time"
 
 	"github.com/matthieutran/duey"
-	"github.com/matthieutran/leafre-login/server/writer"
+	login "github.com/matthieutran/leafre-login"
+	"github.com/matthieutran/leafre-login/pkg/operation"
 )
 
-type RequestLogin struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 type ResponseLogin struct {
-	Code writer.CodeLoginRequest `json:"code"`
-	Id   int                     `json:"id"`
+	Code operation.CodeLoginRequest `json:"code"`
+	Id   int                        `json:"id"`
 }
 
-func CheckLogin(es *duey.EventStreamer, payload *RequestLogin) ResponseLogin {
+func CheckLogin(es *duey.EventStreamer, payload login.UserForm) ResponseLogin {
 	var res ResponseLogin
 	es.Request("auth.login", &payload, &res, 5*time.Second)
 
