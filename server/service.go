@@ -79,10 +79,12 @@ func InitHandlers(es *duey.EventStreamer) map[uint16]handler.PacketHandler {
 	// Inject repository dependencies into handlers
 	handlerCheckPassword := handler.NewHandlerCheckPassword(userRepository)
 	handlerWorldRequest := handler.NewHandlerWorldRequest(worldRepository, channelRepository)
+	handlerCheckUserLimit := handler.NewHandlerCheckUserLimit()
 
 	// Add handlers to the map
-	addHandler(handler.OpCodeCheckPassword, &handlerCheckPassword) // 0x00
-	addHandler(handler.OpCodeWorldRequest, &handlerWorldRequest)   // 0xB
+	addHandler(handler.OpCodeCheckPassword, &handlerCheckPassword)   // 0x00
+	addHandler(handler.OpCodeWorldRequest, &handlerWorldRequest)     // 0xB
+	addHandler(handler.OpCodeCheckUserLimit, &handlerCheckUserLimit) // 0x6
 
 	return handlers
 }
