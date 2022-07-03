@@ -11,12 +11,19 @@ func NewWorldRepository() WorldRepository {
 
 // Get a list of all active worlds
 func (r WorldRepository) FetchAll() (w login.Worlds, err error) {
+	var blockCharCreationByte byte = 1
+
+	blockCharCreation := false
+	if !blockCharCreation {
+		blockCharCreationByte = 0
+	}
+
 	return []login.World{
 		{
 			Id:                0,
 			Name:              "Scania",
 			State:             2,
-			BlockCharCreation: false,
+			BlockCharCreation: blockCharCreationByte,
 		},
 	}, nil
 }

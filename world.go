@@ -8,7 +8,7 @@ type World struct {
 	// State of the world (0: Nothing, 1: Event, 2: New, 3: Hot)
 	State byte `json:"state"`
 	// Flag to stop characters from being created
-	BlockCharCreation bool `json:"block_char_creation"`
+	BlockCharCreation byte `json:"block_char_creation"`
 }
 
 type Worlds []World
