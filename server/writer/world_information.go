@@ -7,8 +7,11 @@ import (
 	"github.com/matthieutran/packet"
 )
 
-// WorldInformation provides information about each available world to the client
+// OpCodeWorldInformation provides information about each available world to the client
 var OpCodeWorldInformation uint16 = 0xA
+
+// OpCodeLatestConnectedWorld provides the client with its last seleted world
+var OpCodeLatestConnectedWorld uint16 = 0x18
 
 // WriteWorldInformation writes information about a *single* world
 func WriteWorldInformation(w io.Writer, world login.World, channels login.Channels) {
@@ -48,8 +51,6 @@ func WriteWorldInformationDone(w io.Writer) {
 
 	w.Write(p.Bytes())
 }
-
-var OpCodeLatestConnectedWorld uint16 = 0x18
 
 // WriteLatestConnectedWorld writes the user's latest connected world ID
 func WriteLatestConnectedWorld(w io.Writer, latestConnectedWorld int) {

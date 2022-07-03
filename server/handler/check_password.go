@@ -23,11 +23,11 @@ func NewHandlerCheckPassword(userRepository login.UserRepository) HandlerCheckPa
 }
 
 func (h *HandlerCheckPassword) Handle(w io.Writer, es *duey.EventStreamer, p packet.Packet) {
-	payload := reader.ReadLogin(p)
+	recv := reader.ReadLogin(p)
 	user, code := h.userRepository.Login(
 		login.UserForm{
-			Username: payload.Username,
-			Password: payload.Password,
+			Username: recv.Username,
+			Password: recv.Password,
 		},
 	)
 
