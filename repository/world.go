@@ -5,8 +5,12 @@ import login "github.com/matthieutran/leafre-login"
 type WorldRepository struct {
 }
 
+func NewWorldRepository() WorldRepository {
+	return WorldRepository{}
+}
+
 // Get a list of all active worlds
-func FetchAll() (w login.Worlds, err error) {
+func (r WorldRepository) FetchAll() (w login.Worlds, err error) {
 	return []login.World{
 		{
 			Id:                0,
@@ -18,6 +22,6 @@ func FetchAll() (w login.Worlds, err error) {
 }
 
 // Change the specified world's state
-func SetWorldState(id int, state byte) {
+func (r WorldRepository) SetWorldState(id int, state byte) {
 
 }

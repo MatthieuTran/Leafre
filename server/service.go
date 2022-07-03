@@ -63,6 +63,7 @@ func onPacket(es *duey.EventStreamer, handlers map[uint16]handler.PacketHandler)
 	}
 }
 
+// Create a map of opcodes to their associated handler and do any dependency injection here
 func InitHandlers(es *duey.EventStreamer) map[uint16]handler.PacketHandler {
 	// Create handler collection
 	handlers := make(map[uint16]handler.PacketHandler)
@@ -72,12 +73,15 @@ func InitHandlers(es *duey.EventStreamer) map[uint16]handler.PacketHandler {
 
 	// Inject event streamer into the repository
 	userRepository := repository.NewUserRepository(es)
+	worldRepository := repository.NewWorldRepository()
 
 	// Inject repository dependencies into handlers
 	handlerCheckPassword := handler.NewHandlerCheckPassword(userRepository)
+	handlerWorldRequest := handler.NewHandlerWorldRequest(worldRepository)
 
-	addHandler(handler.OpCodeCheckPassword, &handlerCheckPassword)         // 0x00
-	addHandler(handler.OpCodeWorldRequest, &handler.HandlerWorldRequest{}) // 0xB
+	// Add handlers to the map
+	addHandler(handler.OpCodeCheckPassword, &handlerCheckPassword) // 0x00
+	addHandler(handler.OpCodeWorldRequest, &handlerWorldRequest)   // 0xB
 
 	return handlers
 }
