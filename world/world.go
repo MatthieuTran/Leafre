@@ -1,4 +1,4 @@
-package login
+package world
 
 type World struct {
 	// ID of the world
@@ -12,10 +12,3 @@ type World struct {
 }
 
 type Worlds []World
-
-type WorldRepository interface {
-	// Get a list of all active worlds
-	FetchAll() (Worlds, error)
-	// Change the specified world's state
-	SetWorldState(id int, state byte)
-}

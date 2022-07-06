@@ -3,7 +3,7 @@ package writer
 import (
 	"io"
 
-	"github.com/matthieutran/leafre-login/pkg/operation"
+	"github.com/matthieutran/leafre-login/user"
 	"github.com/matthieutran/packet"
 )
 
@@ -11,14 +11,14 @@ import (
 var OpCodeSelectWorldResult uint16 = 0xB
 
 // WriteSelectWorldResult writes the world user limit information
-func WriteSelectWorldResult(w io.Writer, result operation.CodeLoginRequest) {
+func WriteSelectWorldResult(w io.Writer, result user.LoginResponse) {
 	p := packet.Packet{}
 	p.WriteShort(OpCodeSelectWorldResult)
 	p.WriteByte(0) // bWarningLevel
 	p.WriteByte(0) // bPopulateLevel
 	p.WriteByte(byte(result))
 
-	if result == operation.LoginRequestSuccess {
+	if result == user.LoginResponseSuccess {
 		var characters []interface{}
 		// Send characters
 		p.WriteByte(byte(len(characters))) // Character count

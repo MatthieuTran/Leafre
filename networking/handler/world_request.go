@@ -5,28 +5,29 @@ import (
 	"log"
 
 	"github.com/matthieutran/duey"
-	login "github.com/matthieutran/leafre-login"
-	"github.com/matthieutran/leafre-login/server/writer"
+	"github.com/matthieutran/leafre-login/channel"
+	"github.com/matthieutran/leafre-login/networking/writer"
+	"github.com/matthieutran/leafre-login/world"
 	"github.com/matthieutran/packet"
 )
 
 const OpCodeWorldRequest uint16 = 0xB
 
 type HandlerWorldRequest struct {
-	worldRepository   login.WorldRepository
-	channelRepository login.ChannelRepository
+	worldService   world.WorldService
+	channelService channel.ChannelService
 }
 
-func NewHandlerWorldRequest(worldRepository login.WorldRepository, channelRepository login.ChannelRepository) HandlerWorldRequest {
+func NewHandlerWorldRequest(worldService world.WorldService, channelService channel.ChannelService) HandlerWorldRequest {
 	return HandlerWorldRequest{
-		worldRepository:   worldRepository,
-		channelRepository: channelRepository,
+		worldService:   worldService,
+		channelService: channelService,
 	}
 }
 
 func (h *HandlerWorldRequest) Handle(w io.Writer, es *duey.EventStreamer, p packet.Packet) {
 	// Fetch a list of all the worlds
-	worlds, err := h.worldRepository.FetchAll()
+	worlds, err := h.worldService.FetchAll()
 	if err != nil {
 		log.Println("Cannot fetch worlds!")
 		return
@@ -34,7 +35,7 @@ func (h *HandlerWorldRequest) Handle(w io.Writer, es *duey.EventStreamer, p pack
 
 	// Start sending world information
 	for _, world := range worlds {
-		channels, err := h.channelRepository.FetchAllbyId(world.Id)
+		channels, err := h.channelService.FetchAllbyId(world.Id)
 		if err != nil {
 			log.Printf("Could not get channel information (World ID: %d)", world.Id)
 		}

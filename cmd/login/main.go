@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/matthieutran/leafre-login/messaging"
-	"github.com/matthieutran/leafre-login/server"
+	"github.com/matthieutran/leafre-login/networking"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 
 	// Create socket
 	wg.Add(1)
-	s := server.BuildServer(&wg, es)
+	s := networking.BuildServer(&wg, es)
 	s.Start(&wg)
 
 	// Block until all goroutines are done

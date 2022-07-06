@@ -4,9 +4,9 @@ import (
 	"io"
 
 	"github.com/matthieutran/duey"
-	"github.com/matthieutran/leafre-login/pkg/operation"
-	"github.com/matthieutran/leafre-login/server/reader"
-	"github.com/matthieutran/leafre-login/server/writer"
+	"github.com/matthieutran/leafre-login/networking/reader"
+	"github.com/matthieutran/leafre-login/networking/writer"
+	"github.com/matthieutran/leafre-login/user"
 	"github.com/matthieutran/packet"
 )
 
@@ -22,7 +22,7 @@ func NewHandlerSelectWorld() HandlerSelectWorld {
 func (h *HandlerSelectWorld) Handle(w io.Writer, es *duey.EventStreamer, p packet.Packet) {
 	_ = reader.ReadSelectWorld(p)
 
-	result := operation.LoginRequestSuccess
+	result := user.LoginResponseSuccess
 	writer.WriteSelectWorldResult(w, result)
 }
 

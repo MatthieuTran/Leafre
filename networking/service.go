@@ -1,4 +1,4 @@
-package server
+package networking
 
 import (
 	"crypto/rand"
@@ -6,9 +6,11 @@ import (
 	"sync"
 
 	"github.com/matthieutran/duey"
+	"github.com/matthieutran/leafre-login/channel"
 	"github.com/matthieutran/leafre-login/codec"
-	"github.com/matthieutran/leafre-login/repository"
-	"github.com/matthieutran/leafre-login/server/handler"
+	"github.com/matthieutran/leafre-login/messaging"
+	"github.com/matthieutran/leafre-login/networking/handler"
+	"github.com/matthieutran/leafre-login/world"
 	"github.com/matthieutran/packet"
 	"github.com/matthieutran/tcpserve"
 )
@@ -71,14 +73,14 @@ func InitHandlers(es *duey.EventStreamer) map[uint16]handler.PacketHandler {
 		handlers[opcode] = h
 	}
 
-	// Inject event streamer into the repository
-	userRepository := repository.NewUserRepository(es)
-	worldRepository := repository.NewWorldRepository()
-	channelRepository := repository.NewChannelRepostory()
+	// Inject event streamer into the services
+	userService := messaging.NewUserService(es)
+	worldService := world.NewWorldService()
+	channelService := channel.NewChannelService()
 
-	// Inject repository dependencies into handlers
-	handlerCheckPassword := handler.NewHandlerCheckPassword(userRepository)
-	handlerWorldRequest := handler.NewHandlerWorldRequest(worldRepository, channelRepository)
+	// Inject service dependencies into handlers
+	handlerCheckPassword := handler.NewHandlerCheckPassword(userService)
+	handlerWorldRequest := handler.NewHandlerWorldRequest(worldService, channelService)
 	handlerCheckUserLimit := handler.NewHandlerCheckUserLimit()
 	handlerSelectWorld := handler.NewHandlerSelectWorld()
 

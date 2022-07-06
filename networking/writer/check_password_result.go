@@ -3,35 +3,34 @@ package writer
 import (
 	"io"
 
-	login "github.com/matthieutran/leafre-login"
-	"github.com/matthieutran/leafre-login/pkg/operation"
+	"github.com/matthieutran/leafre-login/user"
 	"github.com/matthieutran/packet"
 )
 
 var OpCodeCheckPasswordResult uint16 = 0x0
 
-func WriteCheckPasswordResult(w io.Writer, res operation.CodeLoginRequest, user login.User) {
+func WriteCheckPasswordResult(w io.Writer, res user.LoginResponse, u user.User) {
 	p := packet.Packet{}
 	p.WriteShort(OpCodeCheckPasswordResult) // Header
 	p.WriteByte(byte(res))                  // Result
 	p.WriteByte(0)                          // Unknown1
 	p.WriteInt(0)                           // Unknown2
 
-	if res == operation.LoginRequestSuccess {
-		p.WriteInt(uint32(user.Id))  // AccountID
-		p.WriteByte(user.Gender)     // Gender TODO: change me
-		p.WriteByte(0)               // AdminLevel
-		p.WriteShort(0)              // GM Level
-		p.WriteByte(0)               // nCountryID
-		p.WriteString(user.Username) // sNexonClubID
-		p.WriteByte(0)               // nPurchaseEXP
-		p.WriteByte(0)               // ChatUnblockReason
-		p.WriteLong(0)               // dtChatUnblockDate
-		p.WriteLong(0)               // dtRegisterDate
-		p.WriteInt(4)                // nNumOfCharacter
-		p.WriteByte(1)               // v44
-		p.WriteByte(0)               // sMsg
-		p.WriteLong(0)               // session key (for preventing remote hacks)
+	if res == user.LoginResponseSuccess {
+		p.WriteInt(uint32(u.Id))  // AccountID
+		p.WriteByte(u.Gender)     // Gender TODO: change me
+		p.WriteByte(0)            // AdminLevel
+		p.WriteShort(0)           // GM Level
+		p.WriteByte(0)            // nCountryID
+		p.WriteString(u.Username) // sNexonClubID
+		p.WriteByte(0)            // nPurchaseEXP
+		p.WriteByte(0)            // ChatUnblockReason
+		p.WriteLong(0)            // dtChatUnblockDate
+		p.WriteLong(0)            // dtRegisterDate
+		p.WriteInt(4)             // nNumOfCharacter
+		p.WriteByte(1)            // v44
+		p.WriteByte(0)            // sMsg
+		p.WriteLong(0)            // session key (for preventing remote hacks)
 	}
 
 	w.Write(p.Bytes())

@@ -1,12 +1,11 @@
-package repository
+package messaging
 
 import (
 	"errors"
 
 	"github.com/matthieutran/duey"
-	login "github.com/matthieutran/leafre-login"
 	"github.com/matthieutran/leafre-login/messaging/command"
-	"github.com/matthieutran/leafre-login/pkg/operation"
+	"github.com/matthieutran/leafre-login/user"
 )
 
 // An AuthUser is an instance of the user object that we get back from the auth service
@@ -25,21 +24,21 @@ type ProfileUser struct {
 	Gender    byte `json:"gender"`
 }
 
-type UserRepository struct {
+type UserService struct {
 	es *duey.EventStreamer
 }
 
-func NewUserRepository(es *duey.EventStreamer) (r UserRepository) {
+func NewUserService(es *duey.EventStreamer) (r UserService) {
 	r.es = es
 
 	return
 }
 
 // Login validates the login details in the `UserForm` object and returns the user's object and error (where applicable)
-func (r UserRepository) Login(form login.UserForm) (user login.User, code operation.CodeLoginRequest) {
+func (r UserService) Login(form user.UserForm) (u user.User, code user.LoginResponse) {
 	var authUser AuthUser
 	res := command.CheckLogin(r.es, form) // Request login validation through event
-	if res.Code == operation.LoginRequestSuccess {
+	if res.Code == user.LoginResponseSuccess {
 		// TODO: change to call GetUser() and return instead.
 		authUser = AuthUser{
 			AuthId:   res.Id,
@@ -48,15 +47,15 @@ func (r UserRepository) Login(form login.UserForm) (user login.User, code operat
 		}
 
 		profileUser, _ := r.getProfileById(res.Id)
-		user = r.stitchUsers(authUser, profileUser)
+		u = r.stitchUsers(authUser, profileUser)
 	}
 
-	return user, res.Code
+	return u, res.Code
 }
 
 // stitchUsers combines an auth user and a profile user to fulfill the generic User model
-func (r UserRepository) stitchUsers(authUser AuthUser, profileUser ProfileUser) login.User {
-	return login.User{
+func (r UserService) stitchUsers(authUser AuthUser, profileUser ProfileUser) user.User {
+	return user.User{
 		Id:       authUser.AuthId,
 		Username: authUser.Username,
 		Password: authUser.Password,
@@ -65,19 +64,19 @@ func (r UserRepository) stitchUsers(authUser AuthUser, profileUser ProfileUser) 
 	}
 }
 
-func (r UserRepository) getAuthById(int) (user AuthUser, err error) {
+func (r UserService) getAuthById(int) (user AuthUser, err error) {
 	return AuthUser{}, errors.New("not implemented yet")
 }
 
-func (r UserRepository) getProfileById(int) (ProfileUser, error) {
+func (r UserService) getProfileById(int) (ProfileUser, error) {
 	return ProfileUser{Gender: 0}, nil
 }
 
 //GetById fetches a user by its ID
-func (r UserRepository) GetById(id int) (login.User, error) {
+func (r UserService) GetById(id int) (user.User, error) {
 	authUser, err := r.getAuthById(id)
 	if err != nil {
-		return login.User{}, err
+		return user.User{}, err
 	}
 	profileUser, _ := r.getProfileById(id)
 

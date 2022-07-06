@@ -4,8 +4,8 @@ import (
 	"io"
 
 	"github.com/matthieutran/duey"
-	"github.com/matthieutran/leafre-login/server/reader"
-	"github.com/matthieutran/leafre-login/server/writer"
+	"github.com/matthieutran/leafre-login/networking/reader"
+	"github.com/matthieutran/leafre-login/networking/writer"
 	"github.com/matthieutran/packet"
 )
 
