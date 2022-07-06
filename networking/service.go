@@ -7,8 +7,8 @@ import (
 
 	"github.com/matthieutran/duey"
 	"github.com/matthieutran/leafre-login/channel"
-	"github.com/matthieutran/leafre-login/codec"
 	"github.com/matthieutran/leafre-login/messaging"
+	"github.com/matthieutran/leafre-login/networking/codec"
 	"github.com/matthieutran/leafre-login/networking/handler"
 	"github.com/matthieutran/leafre-login/world"
 	"github.com/matthieutran/packet"
