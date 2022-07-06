@@ -3,7 +3,8 @@ package writer
 import (
 	"io"
 
-	login "github.com/matthieutran/leafre-login"
+	"github.com/matthieutran/leafre-login/channel"
+	"github.com/matthieutran/leafre-login/world"
 	"github.com/matthieutran/packet"
 )
 
@@ -14,7 +15,7 @@ var OpCodeWorldInformation uint16 = 0xA
 var OpCodeLatestConnectedWorld uint16 = 0x18
 
 // WriteWorldInformation writes information about a *single* world
-func WriteWorldInformation(w io.Writer, world login.World, channels login.Channels) {
+func WriteWorldInformation(w io.Writer, world world.World, channels channel.Channels) {
 	p := packet.Packet{}
 	p.WriteShort(OpCodeWorldInformation)
 	p.WriteByte(world.Id)
