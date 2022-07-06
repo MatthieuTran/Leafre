@@ -1,6 +1,6 @@
 package world
 
-type WorldService interface {
+type Service interface {
 	// Get a list of all active worlds
 	FetchAll() (Worlds, error)
 	// Change the specified world's state
@@ -11,7 +11,7 @@ type WorldService interface {
 type worldService struct {
 }
 
-func NewWorldService() WorldService {
+func NewWorldService() Service {
 	return worldService{}
 }
 

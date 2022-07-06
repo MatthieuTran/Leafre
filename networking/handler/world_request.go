@@ -14,11 +14,11 @@ import (
 const OpCodeWorldRequest uint16 = 0xB
 
 type HandlerWorldRequest struct {
-	worldService   world.WorldService
-	channelService channel.ChannelService
+	worldService   world.Service
+	channelService channel.Service
 }
 
-func NewHandlerWorldRequest(worldService world.WorldService, channelService channel.ChannelService) HandlerWorldRequest {
+func NewHandlerWorldRequest(worldService world.Service, channelService channel.Service) HandlerWorldRequest {
 	return HandlerWorldRequest{
 		worldService:   worldService,
 		channelService: channelService,
@@ -38,6 +38,7 @@ func (h *HandlerWorldRequest) Handle(w io.Writer, es *duey.EventStreamer, p pack
 		channels, err := h.channelService.FetchAllbyId(world.Id)
 		if err != nil {
 			log.Printf("Could not get channel information (World ID: %d)", world.Id)
+			continue
 		}
 
 		// Send information regarding the world and its channels

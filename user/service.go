@@ -1,6 +1,6 @@
 package user
 
-type UserForm struct {
+type LoginForm struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	MachineId string `json:"machine_id"`
@@ -9,7 +9,7 @@ type UserForm struct {
 // Service provides access to a user store
 type Service interface {
 	// Login validates the login details in the `UserForm` object and returns the user's object and error (where applicable)
-	Login(UserForm) (user User, code LoginResponse)
+	Login(LoginForm) (user User, code LoginResponse)
 
 	// GetById fetches a user by its ID
 	GetById(int) (user User, err error)

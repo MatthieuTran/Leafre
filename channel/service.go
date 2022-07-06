@@ -1,6 +1,6 @@
 package channel
 
-type ChannelService interface {
+type Service interface {
 	// FetchAll gets a list of all active channels
 	FetchAll() (Channels, error)
 	// FetchAllById gets a list of all active channels under a specified world
@@ -13,7 +13,7 @@ type ChannelService interface {
 type channelService struct {
 }
 
-func NewChannelService() ChannelService {
+func NewChannelService() Service {
 	return channelService{}
 }
 

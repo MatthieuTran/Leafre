@@ -25,7 +25,7 @@ func NewHandlerCheckPassword(userService user.Service) HandlerCheckPassword {
 func (h *HandlerCheckPassword) Handle(w io.Writer, es *duey.EventStreamer, p packet.Packet) {
 	recv := reader.ReadLogin(p)
 	user, code := h.userService.Login(
-		user.UserForm{
+		user.LoginForm{
 			Username: recv.Username,
 			Password: recv.Password,
 		},

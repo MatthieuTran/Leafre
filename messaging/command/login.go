@@ -12,7 +12,7 @@ type ResponseLogin struct {
 	Id   int                `json:"id"`
 }
 
-func CheckLogin(es *duey.EventStreamer, payload user.UserForm) ResponseLogin {
+func CheckLogin(es *duey.EventStreamer, payload user.LoginForm) ResponseLogin {
 	var res ResponseLogin
 	es.Request("auth.login", &payload, &res, 5*time.Second)
 
