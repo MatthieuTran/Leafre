@@ -6,16 +6,15 @@ import (
 	"fmt"
 	"testing"
 
-	login "github.com/matthieutran/leafre-login"
-	"github.com/matthieutran/leafre-login/pkg/operation"
-	"github.com/matthieutran/leafre-login/server/writer"
+	"github.com/matthieutran/leafre-login/networking/writer"
+	"github.com/matthieutran/leafre-login/user"
 )
 
 // TestWriteCheckPasswordResultNotSuccess tests that the writer should receive the auth fail result only.
 func TestWriteCheckPasswordResultNotSuccess(t *testing.T) {
 	var b bytes.Buffer
 
-	writer.WriteCheckPasswordResult(&b, operation.LoginRequestAuthFail, login.User{})
+	writer.WriteCheckPasswordResult(&b, user.LoginResponseAuthFail, user.User{})
 
 	// Ensure size <= 8
 	size := len(b.Bytes())
@@ -38,8 +37,8 @@ func TestWriteCheckPasswordResultNotSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal("Could not read bytes:", err)
 	}
-	if code != byte(operation.LoginRequestAuthFail) {
-		t.Errorf("Expected the result code to be % X, got % X", operation.LoginRequestAuthFail, code)
+	if code != byte(user.LoginResponseAuthFail) {
+		t.Errorf("Expected the result code to be % X, got % X", user.LoginResponseAuthFail, code)
 	}
 }
 
@@ -48,7 +47,7 @@ func TestWriteCheckPasswordResultSuccess(t *testing.T) {
 	var b bytes.Buffer
 	id := 500
 
-	writer.WriteCheckPasswordResult(&b, operation.LoginRequestSuccess, login.User{Id: id})
+	writer.WriteCheckPasswordResult(&b, user.LoginResponseSuccess, user.User{Id: id})
 
 	// Ensure packet size > 8
 	fmt.Printf("% X\n", b)
@@ -72,8 +71,8 @@ func TestWriteCheckPasswordResultSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatal("Could not read bytes:", err)
 	}
-	if code != byte(operation.LoginRequestSuccess) {
-		t.Errorf("Expected the result code to be % X, got % X", operation.LoginRequestAuthFail, code)
+	if code != byte(user.LoginResponseSuccess) {
+		t.Errorf("Expected the result code to be % X, got % X", user.LoginResponseAuthFail, code)
 	}
 
 	// Skip bytes
