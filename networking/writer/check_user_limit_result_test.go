@@ -20,7 +20,7 @@ func TestWriteCheckUserLimitResult(t *testing.T) {
 	// Ensure byte size == 4 (header + above packet)
 	size := len(b.Bytes())
 	if size != 4 {
-		t.Errorf("Expected byte size == 4, received", size)
+		t.Error("Expected byte size == 4, received", size)
 	}
 
 	// Ensure header == OpcodeCheckUserLimitResult

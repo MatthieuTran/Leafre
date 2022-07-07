@@ -19,8 +19,10 @@ func NewHandlerCheckUserLimit() HandlerCheckUserLimit {
 }
 
 func (h *HandlerCheckUserLimit) Handle(w io.Writer, es *duey.EventStreamer, p packet.Packet) {
-	_ = reader.ReadCheckUserLimit(p) // TODO: handle this packet based on the client's specified world Id
-	writer.WriteCheckUserLimitResult(w)
+	_ = reader.ReadCheckUserLimit(p)
+
+	var bWarningLevel, bPopulateLevel byte // TODO: implement bWarningLevel and bPopulateLevel
+	writer.WriteCheckUserLimitResult(w, bWarningLevel, bPopulateLevel)
 }
 
 func (h *HandlerCheckUserLimit) String() string {

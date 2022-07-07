@@ -10,11 +10,11 @@ import (
 var OpCodeCheckUserLimitResult uint16 = 0x3
 
 // WriteCheckUserLimitResult writes the world user limit information
-func WriteCheckUserLimitResult(w io.Writer) {
+func WriteCheckUserLimitResult(w io.Writer, bWarningLevel byte, bPopulateLevel byte) {
 	p := packet.Packet{}
 	p.WriteShort(OpCodeCheckUserLimitResult)
-	p.WriteByte(0) // bWarningLevel
-	p.WriteByte(0) // bPopulateLevel
+	p.WriteByte(bWarningLevel)
+	p.WriteByte(bPopulateLevel)
 
 	// Write world to client
 	w.Write(p.Bytes())
