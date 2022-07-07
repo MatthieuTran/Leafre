@@ -26,7 +26,7 @@ func TestReadCheckUserLimit(t *testing.T) {
 
 	// Check if unknown1 matches
 	if recv.Unknown1 != unknown1[0] {
-		t.Errorf("Expected Unknown1 == %d, actual = %d", unknown1[0], recv.WorldId)
+		t.Errorf("Expected Unknown1 == %d, actual = %d", unknown1[0], recv.Unknown1)
 	}
 }
 
