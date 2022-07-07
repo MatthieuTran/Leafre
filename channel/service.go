@@ -13,8 +13,8 @@ type Service interface {
 type channelService struct {
 }
 
-func NewChannelService() Service {
-	return channelService{}
+func NewChannelService() *channelService {
+	return &channelService{}
 }
 
 // FetchAll gets a list of all active channels
@@ -50,6 +50,6 @@ func (s channelService) FetchAllbyId(worldId byte) (res Channels, err error) {
 }
 
 // SetAdultChannel changes the adult flag to true or false for the specified channel id
-func (s channelService) SetAdultChannel(id int, flag bool) {
+func (s *channelService) SetAdultChannel(id int, flag bool) {
 
 }

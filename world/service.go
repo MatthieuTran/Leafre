@@ -11,8 +11,8 @@ type Service interface {
 type worldService struct {
 }
 
-func NewWorldService() Service {
-	return worldService{}
+func NewWorldService() *worldService {
+	return &worldService{}
 }
 
 // Get a list of all active worlds

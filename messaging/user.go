@@ -28,10 +28,11 @@ type UserService struct {
 	es *duey.EventStreamer
 }
 
-func NewUserService(es *duey.EventStreamer) (r user.Service) {
-	r.es = es
+func NewUserService(es *duey.EventStreamer) *UserService {
+	var s UserService
+	s.es = es
 
-	return
+	return &s
 }
 
 // Login validates the login details in the `UserForm` object and returns the user's object and error (where applicable)
