@@ -2,12 +2,14 @@ package server
 
 import (
 	"context"
+	"crypto/rand"
 	"log"
 	"net"
 	"sync"
 
 	"github.com/matthieutran/leafre-login/pkg/packet"
 	"github.com/matthieutran/leafre-login/pkg/tcp"
+	"github.com/matthieutran/leafre-login/server/session"
 	"github.com/matthieutran/leafre-login/server/writer"
 )
 
@@ -17,10 +19,10 @@ const (
 	LOCALE        = 8
 )
 
-func Start(wg *sync.WaitGroup, ctx context.Context) func(host string, port int) {
+func Start(wg *sync.WaitGroup, ctx context.Context, sr session.SessionRegistry) func(host string, port int) {
 	return func(host string, port int) {
 		err := tcp.NewServer().
-			WithOnConnected(onConnected).
+			WithOnConnected(onConnected(sr)).
 			WithOnPacket(onPacket).
 			WithOnDisconnected(onDisconnected).
 			Start(wg, ctx)(host, port)
@@ -31,13 +33,28 @@ func Start(wg *sync.WaitGroup, ctx context.Context) func(host string, port int) 
 	}
 }
 
-func onConnected(conn net.Conn) {
-	log.Printf("New client connection (%s)", conn.RemoteAddr())
+func onConnected(sr session.SessionRegistry) func(conn net.Conn) {
+	return func(conn net.Conn) {
+		log.Printf("New client connection (%s)", conn.RemoteAddr())
 
-	ivRecv := []byte{0, 0, 0, 0}
-	ivSend := []byte{0, 0, 0, 0}
+		// Create IVs
+		var ivRecv, ivSend [4]byte
+		rand.Read(ivRecv[:])
+		rand.Read(ivSend[:])
 
-	writer.WriteHandshake(conn)(MAJOR_VERSION, MINOR_VERSION, ivRecv, ivSend, LOCALE)
+		// Generate Codecs
+		encrypter, decrypter := generateCodecs(MAJOR_VERSION, ivRecv, ivSend)
+
+		// Create Session
+		s, err := sr.Create(conn, encrypter, decrypter)
+		if err != nil {
+			log.Printf("Could not create session. Rejecting connection (%s): %s", conn.RemoteAddr(), err)
+			return
+		}
+
+		// Send client handshake
+		writer.WriteHandshake(s)(MAJOR_VERSION, MINOR_VERSION, ivRecv[:], ivSend[:], LOCALE)
+	}
 }
 
 func onPacket(conn net.Conn, data []byte) {

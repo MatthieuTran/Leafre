@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/matthieutran/leafre-login/server"
+	"github.com/matthieutran/leafre-login/server/session"
 )
 
 const (
@@ -37,7 +38,8 @@ func main() {
 
 	// Start up server
 	wg.Add(1)
-	go server.Start(&wg, ctx)(HOST, PORT) // Inject WaitGroup and Context and call with options
+	sr := session.NewSessionRegistry()        // Create and inject session registry
+	go server.Start(&wg, ctx, sr)(HOST, PORT) // Inject WaitGroup and Context and call with options
 
 	wg.Wait()
 }
