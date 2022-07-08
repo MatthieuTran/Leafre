@@ -3,7 +3,6 @@ package net_test
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"net"
 	"testing"
 
@@ -59,8 +58,24 @@ func TestConnHandshake(t *testing.T) {
 		t.Errorf("Expected locale == %d, actual = %d", locale, buf[15])
 	}
 
-	log.Println("END")
-
 	conn1.Close()
 	conn2.Close()
+}
+
+func TestReadPacketSize(t *testing.T) {
+	// When given a byte array of [193, 226, 195, 226] ReadPacketSize should return 2
+	size2 := []byte{193, 226, 195, 226}
+	r := bytes.NewReader(size2)
+	n, _ := netLogin.ReadPacketSize(r)
+	if n != 2 {
+		t.Errorf("Expected PacketSize to be %d, actual = %d", 2, n)
+	}
+
+	// When given a byte array of [216, 54, 220, 54] ReadPacketSize should return 4
+	size4 := []byte{216, 54, 220, 54}
+	r = bytes.NewReader(size4)
+	n, _ = netLogin.ReadPacketSize(r)
+	if n != 4 {
+		t.Errorf("Expected PacketSize to be %d, actual = %d", 4, n)
+	}
 }
