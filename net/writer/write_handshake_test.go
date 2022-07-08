@@ -40,16 +40,17 @@ func TestWriteHandshake(t *testing.T) {
 	writer.WriteHandshake(&b, binary.LittleEndian.Uint16(majorVersion[:]), minorVersion, ivRecv[:], ivSend[:], locale[0])
 	res := b.Bytes()
 
-	indx := 0
+	indx := 2
+
 	// Check majorVersion
-	if binary.LittleEndian.Uint16(majorVersion[:]) != binary.LittleEndian.Uint16(res[indx:indx+2]) {
-		t.Errorf("Expected majorVersion == %d, actual = %d", binary.LittleEndian.Uint16(majorVersion[:]), binary.LittleEndian.Uint16(res[0:2]))
+	if !bytes.Equal(majorVersion[:], res[indx:indx+2]) {
+		t.Errorf("Expected majorVersion == %d, actual = %d", majorVersion, res[indx:indx+2])
 	}
 	indx += 2
 
 	// Check minorVersion Size
 	actualMinorVersionSize := res[indx]
-	indx++
+	indx += 2
 	if actualMinorVersionSize != byte(minorVersionSize) {
 		t.Errorf("Expected minorVersionSize == %d, actual = %d", actualMinorVersionSize, minorVersionSize)
 	}
@@ -57,7 +58,7 @@ func TestWriteHandshake(t *testing.T) {
 	actualMinorVersion := res[indx : indx+int(actualMinorVersionSize)]
 	indx += int(actualMinorVersionSize)
 	if !bytes.Equal(actualMinorVersion, []byte(minorVersion)) {
-		t.Errorf("Expected minorVersionSize == %d, actual = %d", actualMinorVersion, []byte(minorVersion))
+		t.Errorf("Expected minorVersion == %d, actual = %d", actualMinorVersion, []byte(minorVersion))
 	}
 
 	// Check ivRecv
