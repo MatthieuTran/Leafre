@@ -55,7 +55,7 @@ func onConnected(sr session.SessionRegistry) func(conn net.Conn) {
 		}
 
 		// Send client handshake
-		writer.WriteHandshake(s)(MAJOR_VERSION, MINOR_VERSION, ivRecv[:], ivSend[:], LOCALE)
+		writer.WriteHandshake(conn)(MAJOR_VERSION, MINOR_VERSION, ivRecv[:], ivSend[:], LOCALE)
 	}
 }
 
