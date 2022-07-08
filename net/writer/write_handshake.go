@@ -3,17 +3,19 @@ package writer
 import (
 	"io"
 
-	"github.com/matthieutran/leafre-login/net/packet"
+	"github.com/matthieutran/leafre-login/pkg/packet"
 )
 
-func WriteHandshake(w io.Writer, majorVersion uint16, minorVersion string, ivRecv, ivSend []byte, locale byte) {
-	p := packet.NewPacketWriter()
-	p.WriteUInt16(14)           // Packet Length
-	p.WriteUInt16(majorVersion) // Maple Version
-	p.WriteString(minorVersion) // Subversion
-	p.Write(ivRecv)             // ivRecv
-	p.Write(ivSend)             // ivSend
-	p.WriteByte(locale)         // Locale (8)
+func WriteHandshake(w io.Writer) func(majorVersion uint16, minorVersion string, ivRecv, ivSend []byte, locale byte) {
+	return func(majorVersion uint16, minorVersion string, ivRecv, ivSend []byte, locale byte) {
+		pw := packet.NewPacketWriter()
+		pw.WriteUInt16(14)           // Packet Length
+		pw.WriteUInt16(majorVersion) // Maple Version
+		pw.WriteString(minorVersion) // Subversion
+		pw.Write(ivRecv)             // ivRecv
+		pw.Write(ivSend)             // ivSend
+		pw.WriteByte(locale)         // Locale (8)
 
-	w.Write(p.Packet())
+		w.Write(pw.Packet())
+	}
 }

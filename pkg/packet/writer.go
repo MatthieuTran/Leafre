@@ -7,7 +7,7 @@ import (
 
 // A PacketWriter is used to write structured data into a byte buffer.
 //
-// A PacketReader implements the io.Reader interfaces by writing into a byte slice.
+// A PacketWriter implements the io.Writer interfaces by writing into a byte slice.
 type PacketWriter interface {
 	WriteUInt16(n uint16) (err error)        // WriteUInt16 appends a number of type uint16 to the packet
 	WriteUInt32(n uint32) (err error)        // WriteUInt32 appends a number of type uint32 to the packet

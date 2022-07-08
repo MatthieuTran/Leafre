@@ -37,7 +37,7 @@ func TestWriteHandshake(t *testing.T) {
 	rand.Read(ivSend[:])
 	rand.Read(locale[:])
 
-	writer.WriteHandshake(&b, binary.LittleEndian.Uint16(majorVersion[:]), minorVersion, ivRecv[:], ivSend[:], locale[0])
+	writer.WriteHandshake(&b)(binary.LittleEndian.Uint16(majorVersion[:]), minorVersion, ivRecv[:], ivSend[:], locale[0])
 	res := b.Bytes()
 
 	indx := 2

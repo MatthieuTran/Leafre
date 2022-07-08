@@ -12,6 +12,7 @@ import (
 
 const (
 	SERVICE_NAME = "Login Server"
+	HOST         = ""
 	PORT         = 8484
 )
 
@@ -36,7 +37,7 @@ func main() {
 
 	// Start up server
 	wg.Add(1)
-	go net.Start(&wg, ctx, PORT)
+	go net.Start(&wg, ctx)(HOST, PORT) // Inject WaitGroup and Context and call with options
 
 	wg.Wait()
 }
