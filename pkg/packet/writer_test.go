@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/matthieutran/leafre-login/net/packet"
+	"github.com/matthieutran/leafre-login/pkg/packet"
 )
 
 // TestPacketWriter tests the PacketWriter and ensures what is put in is what is received

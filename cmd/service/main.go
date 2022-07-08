@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"sync"
 
-	"github.com/matthieutran/leafre-login/net"
+	"github.com/matthieutran/leafre-login/server"
 )
 
 const (
@@ -37,7 +37,7 @@ func main() {
 
 	// Start up server
 	wg.Add(1)
-	go net.Start(&wg, ctx)(HOST, PORT) // Inject WaitGroup and Context and call with options
+	go server.Start(&wg, ctx)(HOST, PORT) // Inject WaitGroup and Context and call with options
 
 	wg.Wait()
 }

@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/matthieutran/leafre-login/net/packet"
+	"github.com/matthieutran/leafre-login/pkg/packet"
 )
 
 func TestPacketReader(t *testing.T) {
