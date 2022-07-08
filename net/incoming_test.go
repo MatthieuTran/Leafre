@@ -2,7 +2,6 @@ package net_test
 
 import (
 	"bytes"
-	"fmt"
 	"net"
 	"testing"
 
@@ -26,7 +25,6 @@ func TestConnHandshake(t *testing.T) {
 	locale := 8
 
 	conn1, conn2 := net.Pipe()
-	fmt.Println("TEST")
 	go netLogin.HandleConn(conn1)
 
 	// Client should receive a handshake packet
