@@ -14,7 +14,7 @@ type Session interface {
 	Decrypt(d []byte) []byte
 }
 
-func newSession(conn net.Conn, encrypter, decrypter Codec) Session {
+func NewSession(conn net.Conn, encrypter, decrypter Codec) Session {
 	return &session{id: conn.RemoteAddr().String(), conn: conn, encrypt: encrypter, decrypt: decrypter}
 }
 
