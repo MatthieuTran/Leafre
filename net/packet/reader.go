@@ -49,7 +49,8 @@ func (p maplePacketReader) ReadUInt64(n *uint64) (err error) {
 }
 
 func (p maplePacketReader) ReadString() (s string, err error) {
-	size, err := p.ReadByte()
+	var size uint16
+	err = p.ReadUInt16(&size)
 	if err != nil {
 		return
 	}

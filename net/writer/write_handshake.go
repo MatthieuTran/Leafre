@@ -2,7 +2,6 @@ package writer
 
 import (
 	"io"
-	"log"
 
 	"github.com/matthieutran/leafre-login/net/packet"
 )
@@ -15,7 +14,6 @@ func WriteHandshake(w io.Writer, majorVersion uint16, minorVersion string, ivRec
 	p.Write(ivRecv)             // ivRecv
 	p.Write(ivSend)             // ivSend
 	p.WriteByte(locale)         // Locale (8)
-	log.Println(p.Packet())
 
 	w.Write(p.Packet())
 }
