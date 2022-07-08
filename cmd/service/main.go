@@ -37,7 +37,6 @@ func main() {
 	// Start up server
 	wg.Add(1)
 	go net.Start(&wg, ctx, PORT)
-	log.Println("Socket started on", PORT)
 
 	wg.Wait()
 }
