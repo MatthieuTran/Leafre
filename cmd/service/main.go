@@ -39,8 +39,5 @@ func main() {
 	go net.Start(&wg, ctx, PORT)
 	log.Println("Socket started on", PORT)
 
-	// Set shutdown signal through context
-	defer cancel()
-
 	wg.Wait()
 }
