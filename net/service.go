@@ -9,18 +9,21 @@ import (
 	"sync"
 )
 
-func newTCPListener(port int) (ln net.Listener, err error) {
+// newListen creates and returns a tcp listener on the given port
+func newListener(port int) (ln net.Listener, err error) {
 	return net.Listen("tcp", fmt.Sprintf(":%d", port))
 }
 
 // Start creates and serves the socket
 func Start(wg *sync.WaitGroup, ctx context.Context, port int) {
 	// Create a listener on the given port
-	ln, err := newTCPListener(port)
+	ln, err := newListener(port)
 	if err != nil {
 		log.Fatal("Could not start TCP server:", err)
 		return
 	}
+
+	log.Println("Socket started on", port)
 
 	go func() {
 		<-ctx.Done() // Block until cancel signal
@@ -31,11 +34,12 @@ func Start(wg *sync.WaitGroup, ctx context.Context, port int) {
 	go accept(ln, wg)
 }
 
+// accept blocks until a new connection arrives and accepts the connection
 func accept(ln net.Listener, wg *sync.WaitGroup) {
 	defer wg.Done() // Decrement parent wait group for listener
 
 	for {
-		conn, err := ln.Accept() // Block until new connection arrives and accept
+		conn, err := ln.Accept() // Block until new connection and accept
 		if err != nil {
 			if errors.Is(err, net.ErrClosed) {
 				// Listener closed. Break out of accept loop
@@ -46,25 +50,6 @@ func accept(ln net.Listener, wg *sync.WaitGroup) {
 			continue
 		}
 
-		log.Printf("New connection (%s)", conn.RemoteAddr())
-		go handleConn(conn)
-	}
-}
-
-func handleConn(conn net.Conn) {
-	for {
-		buf := make([]byte, 2048)
-
-		_, err := conn.Read(buf)
-		if err != nil {
-			if op, ok := err.(*net.OpError); ok {
-				if op.Op == "read" {
-					log.Printf("Client closed connection (%s)", conn.RemoteAddr())
-				}
-			} else {
-				log.Printf("Closing connection (%s): %s", conn.RemoteAddr(), err)
-			}
-			break
-		}
+		go HandleConn(conn)
 	}
 }
