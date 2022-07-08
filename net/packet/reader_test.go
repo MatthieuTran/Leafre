@@ -62,29 +62,4 @@ func TestPacketReader(t *testing.T) {
 	if !bytes.Equal(actualBytes[:], expectedBytes) {
 		t.Errorf("Expected buf[15:24] == %d, actual = %d", expectedBytes, actualBytes)
 	}
-
-	// Reading a string should return correctly
-	var strLength [1]byte
-	rand.Read(strLength[:])
-	str := randString(int(strLength[0]))
-	strBytes := []byte(str)
-	strBuffer := []byte{strLength[0]}
-	strBuffer = append(strBuffer, strBytes...)
-
-	p = packet.NewPacketReader(strBuffer)
-	actualStr, _ := p.ReadString()
-	if actualStr != str {
-		t.Errorf("Expected pStr == %s, actual = %s", str, actualStr)
-	}
-}
-
-func randString(n int) string {
-	var parts = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
-	res := make([]rune, n)
-	for i := range res {
-		res[i] = parts[rand.Intn(len(parts))]
-	}
-
-	return string(res)
 }
