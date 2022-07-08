@@ -3,7 +3,6 @@ package packet
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
 )
 
 // A PacketWriter is used to write structured data into a byte buffer.
@@ -32,7 +31,7 @@ func (p *maplePacketWriter) Packet() Packet {
 }
 
 func (p *maplePacketWriter) Write(buf []byte) (n int, err error) {
-	return n, binary.Write(io.Writer(&p.buf), binary.LittleEndian, buf)
+	return n, binary.Write(&p.buf, binary.LittleEndian, buf)
 }
 
 func (p *maplePacketWriter) WriteByte(b byte) (err error) {
@@ -40,19 +39,23 @@ func (p *maplePacketWriter) WriteByte(b byte) (err error) {
 }
 
 func (p *maplePacketWriter) WriteUInt16(n uint16) (err error) {
-	return binary.Write(io.Writer(&p.buf), binary.LittleEndian, n)
+	return binary.Write(&p.buf, binary.LittleEndian, n)
 }
 
 func (p *maplePacketWriter) WriteUInt32(n uint32) (err error) {
-	return binary.Write(io.Writer(&p.buf), binary.LittleEndian, n)
+	return binary.Write(&p.buf, binary.LittleEndian, n)
 }
 
 func (p *maplePacketWriter) WriteUInt64(n uint64) (err error) {
-	return binary.Write(io.Writer(&p.buf), binary.LittleEndian, n)
+	return binary.Write(&p.buf, binary.LittleEndian, n)
 }
 
-// WriteString appends a byte containing the size of the string and then the string as a byte slice
+// WriteString appends a short containing the size of the string and then the string as a byte slice
 func (p *maplePacketWriter) WriteString(s string) (n int, err error) {
-	p.WriteByte(byte(len(s)))
+	err = p.WriteUInt16(uint16(len(s)))
+	if err != nil {
+		return -1, err
+	}
+
 	return p.Write([]byte(s))
 }
