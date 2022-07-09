@@ -20,12 +20,12 @@ const (
 	LOCALE        = 8
 )
 
-func StartTCPServer(wg *sync.WaitGroup, ctx context.Context, sr session.SessionRegistry) func(host string, port int) {
+func StartTCPServer(wg *sync.WaitGroup, ctx context.Context, ss session.SessionService) func(host string, port int) {
 	return func(host string, port int) {
 		err := tcp.NewServer().
-			WithOnConnected(onConnected(sr)).
-			WithOnPacket(onPacket(sr)).
-			WithOnDisconnected(onDisconnected(sr)).
+			WithOnConnected(onConnected(ss)).
+			WithOnPacket(onPacket(ss)).
+			WithOnDisconnected(onDisconnected(ss)).
 			Start(wg, ctx)(host, port)
 
 		if err != nil {
@@ -34,7 +34,7 @@ func StartTCPServer(wg *sync.WaitGroup, ctx context.Context, sr session.SessionR
 	}
 }
 
-func onConnected(sr session.SessionRegistry) func(conn net.Conn) {
+func onConnected(ss session.SessionService) func(conn net.Conn) {
 	return func(conn net.Conn) {
 		log.Printf("New client connection (%s)", conn.RemoteAddr())
 
@@ -46,10 +46,9 @@ func onConnected(sr session.SessionRegistry) func(conn net.Conn) {
 		// Generate Codecs
 		encrypter, decrypter := generateCodecs(MAJOR_VERSION, ivRecv, ivSend)
 
-		// Create Session
-		s := sr.Create(conn, encrypter, decrypter)
-		err := sr.Add(s)
-
+		// Create and store this session
+		s := session.NewSession(conn, encrypter, decrypter)
+		err := ss.CreateSession(context.Background(), s)
 		if err != nil {
 			log.Printf("Could not add session to registry. Rejecting connection (%s): %s", conn.RemoteAddr(), err)
 			return
@@ -60,23 +59,24 @@ func onConnected(sr session.SessionRegistry) func(conn net.Conn) {
 	}
 }
 
-func onPacket(sr session.SessionRegistry) func(conn net.Conn, data []byte) {
+func onPacket(ss session.SessionService) func(conn net.Conn, data []byte) {
 	return func(conn net.Conn, data []byte) {
-		s, err := sr.Get(conn.RemoteAddr().String())
+		id := conn.RemoteAddr().String()
+		decrypted, err := ss.DecryptPacket(context.Background(), id, data)
 		if err != nil {
-			log.Printf("Could not find session in session registry (%s)", conn.RemoteAddr())
+			log.Println("Error decrypting packet:", err)
 			return
 		}
 
-		p := packet.Packet(s.Decrypt(data))
-		log.Printf("Received packet (%s): %s", s.ID(), p)
+		p := packet.Packet(decrypted)
+		log.Printf("Received packet (%s): %s", id, p)
 	}
 }
 
-func onDisconnected(sr session.SessionRegistry) func(conn net.Conn, reason error) {
+func onDisconnected(ss session.SessionService) func(conn net.Conn, reason error) {
 	return func(conn net.Conn, reason error) {
 		log.Printf("Client closed connection (%s). Reason: %s", conn.RemoteAddr(), reason)
-		sr.Destroy(conn.RemoteAddr().String())
+		ss.RemoveSession(context.Background(), conn.RemoteAddr().String())
 	}
 }
 
