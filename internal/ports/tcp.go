@@ -7,7 +7,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/matthieutran/leafre-login/internal/app/handling/writer"
+	"github.com/matthieutran/leafre-login/internal/app/handler/writer"
 	"github.com/matthieutran/leafre-login/internal/domain/session"
 	"github.com/matthieutran/leafre-login/pkg/crypto"
 	"github.com/matthieutran/leafre-login/pkg/packet"
