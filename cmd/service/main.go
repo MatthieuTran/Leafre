@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"sync"
 
+	"github.com/matthieutran/leafre-login/internal/adapters/repository/inmem"
 	"github.com/matthieutran/leafre-login/internal/domain/session"
 	"github.com/matthieutran/leafre-login/internal/ports"
 )
@@ -38,8 +39,9 @@ func main() {
 
 	// Start up server
 	wg.Add(1)
-	sr := session.NewSessionRegistry()                // Create and inject session registry
-	go ports.StartTCPServer(&wg, ctx, sr)(HOST, PORT) // Inject WaitGroup and Context and call with options
+	sr := inmem.NewInmemSessionRepository()           // Create Session Repository
+	ss := session.NewSessionService(sr)               // Create Session Service and inject repository
+	go ports.StartTCPServer(&wg, ctx, ss)(HOST, PORT) // Inject WaitGroup and Context and call with options
 
 	wg.Wait()
 }
