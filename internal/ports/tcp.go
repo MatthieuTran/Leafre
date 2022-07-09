@@ -1,4 +1,4 @@
-package server
+package ports
 
 import (
 	"context"
@@ -7,10 +7,11 @@ import (
 	"net"
 	"sync"
 
+	"github.com/matthieutran/leafre-login/internal/app/handling/writer"
+	"github.com/matthieutran/leafre-login/internal/domain/session"
+	"github.com/matthieutran/leafre-login/pkg/crypto"
 	"github.com/matthieutran/leafre-login/pkg/packet"
 	"github.com/matthieutran/leafre-login/pkg/tcp"
-	"github.com/matthieutran/leafre-login/server/session"
-	"github.com/matthieutran/leafre-login/server/writer"
 )
 
 const (
@@ -19,7 +20,7 @@ const (
 	LOCALE        = 8
 )
 
-func Start(wg *sync.WaitGroup, ctx context.Context, sr session.SessionRegistry) func(host string, port int) {
+func StartTCPServer(wg *sync.WaitGroup, ctx context.Context, sr session.SessionRegistry) func(host string, port int) {
 	return func(host string, port int) {
 		err := tcp.NewServer().
 			WithOnConnected(onConnected(sr)).
@@ -55,7 +56,7 @@ func onConnected(sr session.SessionRegistry) func(conn net.Conn) {
 		}
 
 		// Send client handshake
-		writer.WriteHandshake(s)(MAJOR_VERSION, MINOR_VERSION, ivRecv[:], ivSend[:], LOCALE)
+		writer.WriteHandshake(conn)(MAJOR_VERSION, MINOR_VERSION, ivRecv[:], ivSend[:], LOCALE)
 	}
 }
 
@@ -77,4 +78,23 @@ func onDisconnected(sr session.SessionRegistry) func(conn net.Conn, reason error
 		log.Printf("Client closed connection (%s). Reason: %s", conn.RemoteAddr(), reason)
 		sr.Destroy(conn.RemoteAddr().String())
 	}
+}
+
+func generateCodecs(version int, ivRecv, ivSend [4]byte) (encrypter, decrypter func(d []byte) []byte) {
+	// Create codecs
+	c := crypto.NewCodec(ivRecv, ivSend, version)
+
+	// Create encrypter
+	encrypter = func(d []byte) (res []byte) {
+		res, _ = c.Encrypt(d, true, true)
+		return
+	}
+
+	// Create decrypter
+	decrypter = func(d []byte) (res []byte) {
+		res, _ = c.Decrypt(d, true, true)
+		return
+	}
+
+	return
 }

@@ -30,11 +30,11 @@ func (s session) ID() string {
 }
 
 func (s *session) Write(p []byte) (n int, err error) {
-	return s.conn.Write(p)
+	return s.conn.Write(s.Encrypt(p))
 }
 
 func (s *session) Read(p []byte) (n int, err error) {
-	return s.conn.Read(p)
+	return s.conn.Read(s.Decrypt(p))
 }
 
 func (s *session) Encrypt(d []byte) []byte {

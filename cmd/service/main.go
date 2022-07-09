@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"sync"
 
-	"github.com/matthieutran/leafre-login/server"
-	"github.com/matthieutran/leafre-login/server/session"
+	"github.com/matthieutran/leafre-login/internal/domain/session"
+	"github.com/matthieutran/leafre-login/internal/ports"
 )
 
 const (
@@ -38,8 +38,8 @@ func main() {
 
 	// Start up server
 	wg.Add(1)
-	sr := session.NewSessionRegistry()        // Create and inject session registry
-	go server.Start(&wg, ctx, sr)(HOST, PORT) // Inject WaitGroup and Context and call with options
+	sr := session.NewSessionRegistry()                // Create and inject session registry
+	go ports.StartTCPServer(&wg, ctx, sr)(HOST, PORT) // Inject WaitGroup and Context and call with options
 
 	wg.Wait()
 }
