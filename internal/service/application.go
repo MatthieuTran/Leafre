@@ -44,10 +44,10 @@ func NewApplication() *Application {
 
 	// Add packet handlers to the map
 	addHandler(handler.OpCodeCheckPassword, &checkPassword)
-	addHandler(handler.OpCodeWorldRequest, &worldRequest)
-	addHandler(handler.OpCodeCheckUserLimit, &checkUserLimit)
-	addHandler(handler.OpCodeSelectWorld, &selectWorld)
 	addHandler(handler.OpCodeCheckDuplicatedID, &checkDuplicatedID)
+	addHandler(handler.OpCodeCheckUserLimit, &checkUserLimit)
+	addHandler(handler.OpCodeWorldRequest, &worldRequest)
+	addHandler(handler.OpCodeSelectWorld, &selectWorld)
 
 	return &Application{
 		SessionService: sessionService,
