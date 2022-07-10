@@ -3,26 +3,28 @@ package service
 import (
 	"github.com/matthieutran/leafre-login/internal/adapters/inmem"
 	"github.com/matthieutran/leafre-login/internal/app/handler"
+	"github.com/matthieutran/leafre-login/internal/domain"
 	"github.com/matthieutran/leafre-login/internal/domain/session"
 	"github.com/matthieutran/leafre-login/internal/domain/user"
 )
 
 type Application struct {
-	SessionService              session.SessionService
-	SessionCommunicationService session.SessionCommunicationService
-	AuthService                 user.AuthService
-	Handlers                    map[uint16]handler.PacketHandler
+	SessionService session.SessionService
+	AuthService    user.AuthService
+	Handlers       map[uint16]handler.PacketHandler
 }
 
 func NewApplication() *Application {
 	// Repositories
-	sr := inmem.NewSessionRepository() // Create Session Repository
-	ur := inmem.NewUserRepository()    // Create User Repository
+	channelRepo := inmem.NewChannelRepository()
+	sessionRepo := inmem.NewSessionRepository()
+	userRepo := inmem.NewUserRepository()
+	worldRepo := inmem.NewWorldRepository()
 
 	// Services
-	sessionService := session.NewSessionService(sr)                           // Create Session Service and inject repository
-	sessionCommunicationService := session.NewSessionCommunicationService(sr) // Create Session Communication Service and inject repository
-	authService := user.NewAuthService(ur)                                    // Create User Auth Service and inject user repository
+	authService := user.NewAuthService(userRepo)
+	sessionService := session.NewSessionService(sessionRepo)
+	worldChannelService := domain.NewWorldChannelService(worldRepo, channelRepo)
 
 	// handlers is a map of opcodes to packet handlers
 	handlers := make(map[uint16]handler.PacketHandler)
@@ -32,14 +34,15 @@ func NewApplication() *Application {
 
 	// Initialize packet handlers
 	checkPassword := handler.NewHandlerCheckPassword(authService)
+	worldRequest := handler.NewHandlerWorldRequest(worldChannelService)
 
 	// Add packet handlers to the map
 	addHandler(handler.OpCodeCheckPassword, &checkPassword)
+	addHandler(handler.OpCodeWorldRequest, &worldRequest)
 
 	return &Application{
-		SessionService:              sessionService,
-		SessionCommunicationService: sessionCommunicationService,
-		AuthService:                 authService,
+		SessionService: sessionService,
+		AuthService:    authService,
 
 		Handlers: handlers,
 	}
