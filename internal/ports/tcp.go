@@ -9,6 +9,7 @@ import (
 
 	"github.com/matthieutran/leafre-login/internal/app/handler/writer"
 	"github.com/matthieutran/leafre-login/internal/domain/session"
+	"github.com/matthieutran/leafre-login/internal/service"
 	"github.com/matthieutran/leafre-login/pkg/crypto"
 	"github.com/matthieutran/leafre-login/pkg/packet"
 	"github.com/matthieutran/leafre-login/pkg/tcp"
@@ -20,12 +21,12 @@ const (
 	LOCALE        = 8
 )
 
-func StartTCPServer(wg *sync.WaitGroup, ctx context.Context, ss session.SessionService) func(host string, port int) {
+func StartTCPServer(wg *sync.WaitGroup, ctx context.Context, app *service.Application) func(host string, port int) {
 	return func(host string, port int) {
 		err := tcp.NewServer().
-			WithOnConnected(onConnected(ss)).
-			WithOnPacket(onPacket(ss)).
-			WithOnDisconnected(onDisconnected(ss)).
+			WithOnConnected(onConnected(app.SessionService)).
+			WithOnPacket(onPacket(app.SessionCommunicationService)).
+			WithOnDisconnected(onDisconnected(app.SessionService)).
 			Start(wg, ctx)(host, port)
 
 		if err != nil {
@@ -59,10 +60,10 @@ func onConnected(ss session.SessionService) func(conn net.Conn) {
 	}
 }
 
-func onPacket(ss session.SessionService) func(conn net.Conn, data []byte) {
+func onPacket(scs session.SessionCommunicationService) func(conn net.Conn, data []byte) {
 	return func(conn net.Conn, data []byte) {
 		id := conn.RemoteAddr().String()
-		decrypted, err := ss.DecryptPacket(context.Background(), id, data)
+		decrypted, err := scs.DecryptPacket(context.Background(), id, data)
 		if err != nil {
 			log.Println("Error decrypting packet:", err)
 			return
@@ -75,8 +76,9 @@ func onPacket(ss session.SessionService) func(conn net.Conn, data []byte) {
 
 func onDisconnected(ss session.SessionService) func(conn net.Conn, reason error) {
 	return func(conn net.Conn, reason error) {
+		id := conn.RemoteAddr().String()
 		log.Printf("Client closed connection (%s). Reason: %s", conn.RemoteAddr(), reason)
-		ss.RemoveSession(context.Background(), conn.RemoteAddr().String())
+		ss.RemoveSession(context.Background(), id)
 	}
 }
 

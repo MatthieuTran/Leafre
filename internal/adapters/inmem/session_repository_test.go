@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matthieutran/leafre-login/internal/adapters/repository/inmem"
+	"github.com/matthieutran/leafre-login/internal/adapters/inmem"
 	"github.com/matthieutran/leafre-login/internal/domain/session"
 )
 
@@ -14,7 +14,7 @@ func TestSessionRepository(t *testing.T) {
 	ctx := context.Background()
 	conn, _ := net.Pipe()
 	mockCodec := func(d []byte) []byte { return d }
-	r := inmem.NewInmemSessionRepository()
+	r := inmem.NewSessionRepository()
 	s := session.NewSession(conn, mockCodec, mockCodec)
 
 	ctxAdd, cancel := context.WithTimeout(ctx, time.Second*5)
