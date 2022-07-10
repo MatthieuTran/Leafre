@@ -2,7 +2,6 @@ package inmem
 
 import (
 	"context"
-	"log"
 
 	"github.com/matthieutran/leafre-login/internal/domain/world"
 )
@@ -23,7 +22,6 @@ func NewWorldRepository() world.WorldRepository {
 		EventDesc: "Leafre",
 	}
 	r.Add(context.Background(), dummy_world)
-	log.Println("Added world", dummy_world)
 
 	return &WorldRepository{worldDict: worldDict}
 }
@@ -35,10 +33,8 @@ func (r WorldRepository) Add(ctx context.Context, w world.World) error {
 }
 
 func (r WorldRepository) GetAll(ctx context.Context) (worlds world.Worlds, err error) {
-	log.Println("PRE:", r.worldDict)
 	for _, ch := range r.worldDict {
 		worlds = append(worlds, ch)
-		log.Println("TEST", worlds)
 	}
 
 	return

@@ -35,10 +35,12 @@ func NewApplication() *Application {
 	// Initialize packet handlers
 	checkPassword := handler.NewHandlerCheckPassword(authService)
 	worldRequest := handler.NewHandlerWorldRequest(worldChannelService)
+	checkUserLimit := handler.NewHandlerCheckUserLimit()
 
 	// Add packet handlers to the map
 	addHandler(handler.OpCodeCheckPassword, &checkPassword)
 	addHandler(handler.OpCodeWorldRequest, &worldRequest)
+	addHandler(handler.OpCodeCheckUserLimit, &checkUserLimit)
 
 	return &Application{
 		SessionService: sessionService,
