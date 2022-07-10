@@ -57,7 +57,7 @@ func (r UserRepository) Add(ctx context.Context, u user.User) error {
 func (r UserRepository) GetByID(ctx context.Context, id int) (u user.User, err error) {
 	u, exists := r.users[id]
 	if !exists {
-		err = user.ErrEmailAlreadyExists
+		err = user.ErrUserDoesNotExist
 	}
 
 	return
