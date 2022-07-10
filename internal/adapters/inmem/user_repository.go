@@ -22,7 +22,7 @@ func NewUserRepository() user.UserRepository {
 		Name:     "matt",
 		Password: "matt12",
 		Email:    "matthieuktran@gmail.com",
-		Birthday: time.Date(1999, time.April, 28, 0, 0, 0, 0, nil),
+		Birthday: time.Date(1999, time.April, 28, 0, 0, 0, 0, &time.Location{}),
 		Gender:   0,
 	}
 	r.Add(context.Background(), dummy_user)

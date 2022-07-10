@@ -1,15 +1,13 @@
 package session
 
-import (
-	"context"
-)
+import "context"
 
 // SessionCommunicationService is a domain service that provides methods to communicate with the session
 type SessionCommunicationService interface {
-	EncryptPacket(ctx context.Context, id string, p []byte) (encrypted []byte, err error)
-	DecryptPacket(ctx context.Context, id string, p []byte) (decrypted []byte, err error)
-	ReadFromID(ctx context.Context, sessionID string, p []byte) (n int, err error)
-	WriteToID(ctx context.Context, sessionID string, p []byte) (n int, err error)
+	EncryptPacket(id string, p []byte) (encrypted []byte, err error)
+	DecryptPacket(id string, p []byte) (decrypted []byte, err error)
+	ReadFromID(sessionID string, p []byte) (n int, err error)
+	WriteToID(sessionID string, p []byte) (n int, err error)
 }
 
 func NewSessionCommunicationService(sr SessionRepository) SessionCommunicationService {
@@ -20,8 +18,8 @@ type defaultSessionCommunicationService struct {
 	sessionRepo SessionRepository
 }
 
-func (scs *defaultSessionCommunicationService) EncryptPacket(ctx context.Context, id string, p []byte) (encrypted []byte, err error) {
-	s, err := scs.sessionRepo.GetById(ctx, id)
+func (scs *defaultSessionCommunicationService) EncryptPacket(id string, p []byte) (encrypted []byte, err error) {
+	s, err := scs.sessionRepo.GetById(context.Background(), id)
 	if err != nil {
 		return
 	}
@@ -29,8 +27,8 @@ func (scs *defaultSessionCommunicationService) EncryptPacket(ctx context.Context
 	return s.encrypt(p), nil
 }
 
-func (scs *defaultSessionCommunicationService) DecryptPacket(ctx context.Context, id string, p []byte) (decrypted []byte, err error) {
-	s, err := scs.sessionRepo.GetById(ctx, id)
+func (scs *defaultSessionCommunicationService) DecryptPacket(id string, p []byte) (decrypted []byte, err error) {
+	s, err := scs.sessionRepo.GetById(context.Background(), id)
 	if err != nil {
 		return
 	}
@@ -38,8 +36,8 @@ func (scs *defaultSessionCommunicationService) DecryptPacket(ctx context.Context
 	return s.decrypt(p), nil
 }
 
-func (scs *defaultSessionCommunicationService) ReadFromID(ctx context.Context, sessionID string, p []byte) (n int, err error) {
-	s, err := scs.sessionRepo.GetById(ctx, sessionID)
+func (scs *defaultSessionCommunicationService) ReadFromID(sessionID string, p []byte) (n int, err error) {
+	s, err := scs.sessionRepo.GetById(context.Background(), sessionID)
 	if err != nil {
 		return
 	}
@@ -47,8 +45,8 @@ func (scs *defaultSessionCommunicationService) ReadFromID(ctx context.Context, s
 	return s.conn.Read(s.decrypt(p))
 }
 
-func (scs *defaultSessionCommunicationService) WriteToID(ctx context.Context, sessionID string, p []byte) (n int, err error) {
-	s, err := scs.sessionRepo.GetById(ctx, sessionID)
+func (scs *defaultSessionCommunicationService) WriteToID(sessionID string, p []byte) (n int, err error) {
+	s, err := scs.sessionRepo.GetById(context.Background(), sessionID)
 	if err != nil {
 		return
 	}

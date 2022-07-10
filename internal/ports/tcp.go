@@ -1,12 +1,15 @@
 package ports
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
+	"encoding/binary"
 	"log"
 	"net"
 	"sync"
 
+	"github.com/matthieutran/leafre-login/internal/app/handler"
 	"github.com/matthieutran/leafre-login/internal/app/handler/writer"
 	"github.com/matthieutran/leafre-login/internal/domain/session"
 	"github.com/matthieutran/leafre-login/internal/service"
@@ -25,7 +28,7 @@ func StartTCPServer(wg *sync.WaitGroup, ctx context.Context, app *service.Applic
 	return func(host string, port int) {
 		err := tcp.NewServer().
 			WithOnConnected(onConnected(app.SessionService)).
-			WithOnPacket(onPacket(app.SessionCommunicationService)).
+			WithOnPacket(onPacket(app.SessionCommunicationService, app.Handlers)).
 			WithOnDisconnected(onDisconnected(app.SessionService)).
 			Start(wg, ctx)(host, port)
 
@@ -60,17 +63,38 @@ func onConnected(ss session.SessionService) func(conn net.Conn) {
 	}
 }
 
-func onPacket(scs session.SessionCommunicationService) func(conn net.Conn, data []byte) {
+type handlersMap map[uint16]handler.PacketHandler
+
+func onPacket(scs session.SessionCommunicationService, handlers handlersMap) func(conn net.Conn, data []byte) {
 	return func(conn net.Conn, data []byte) {
 		id := conn.RemoteAddr().String()
-		decrypted, err := scs.DecryptPacket(context.Background(), id, data)
+
+		// Decrypt incoming packet
+		decrypted, err := scs.DecryptPacket(id, data)
+		p := packet.Packet(decrypted)
 		if err != nil {
 			log.Println("Error decrypting packet:", err)
 			return
 		}
 
-		p := packet.Packet(decrypted)
-		log.Printf("Received packet (%s): %s", id, p)
+		var header uint16
+		r := bytes.NewReader(p.Header())
+		binary.Read(r, binary.LittleEndian, &header)
+
+		var buf bytes.Buffer
+		if h, ok := handlers[header]; ok {
+			// Write packet
+			log.Printf("Handling %s: [%X] %s\n", h, header, p)
+			h.Handle(&buf, p.Bytes())
+		} else {
+			log.Printf("Unhandled Packet: %s\n", p)
+			return
+		}
+
+		// Send packet
+		res := buf.Bytes()
+		log.Printf("Send (%s): %s", id, packet.Packet(res))
+		scs.WriteToID(id, res)
 	}
 }
 
