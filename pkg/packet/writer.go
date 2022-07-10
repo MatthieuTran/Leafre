@@ -9,13 +9,14 @@ import (
 //
 // A PacketWriter implements the io.Writer interfaces by writing into a byte slice.
 type PacketWriter interface {
-	WriteUInt16(n uint16) (err error)        // WriteUInt16 appends a number of type uint16 `n` to the packet
-	WriteUInt32(n uint32) (err error)        // WriteUInt32 appends a number of type uint32 `n` to the packet
-	WriteUInt64(n uint64) (err error)        // WriteUInt64 appends a number of type uint64 `n` to the packet
-	WriteString(s string) (n int, err error) // WriteString appends a string `s` to the packet
-	WriteBytes(p []byte) (n int, err error)  // WriteBytes appends `len(p)` bytes from `p` to the packet
-	WriteOne(c byte) error                   // WriteOne appends byte `c` to the packet
-	Packet() Packet                          // Packet returns the packet associated with the writer
+	WriteUInt16(n uint16) (err error)                          // WriteUInt16 appends a number of type uint16 `n` to the packet
+	WriteUInt32(n uint32) (err error)                          // WriteUInt32 appends a number of type uint32 `n` to the packet
+	WriteUInt64(n uint64) (err error)                          // WriteUInt64 appends a number of type uint64 `n` to the packet
+	WriteString(s string) (n int, err error)                   // WriteString appends a string `s` to the packet. The length of the string `s` is appended as a byte before the string.
+	WritePaddedString(s string, length int) (n int, err error) // WriteString appends a string `s` of fixed length `length` to the packet. If the string `s` is shorter than `length`, padding is appended to string.
+	WriteBytes(p []byte) (n int, err error)                    // WriteBytes appends `len(p)` bytes from `p` to the packet
+	WriteOne(c byte) error                                     // WriteOne appends byte `c` to the packet
+	Packet() Packet                                            // Packet returns the packet associated with the writer
 }
 
 type maplePacketWriter struct {
@@ -58,4 +59,22 @@ func (p *maplePacketWriter) WriteString(s string) (n int, err error) {
 	}
 
 	return p.WriteBytes([]byte(s))
+}
+
+// WritePaddedString does not append a short containing the size of the string. Instead, the string is appended, and then /0 padding is added after to fill the length `length`.
+func (p *maplePacketWriter) WritePaddedString(s string, length int) (n int, err error) {
+	if len(s) > length {
+		// Cut the string to fill the fixed length
+		s = s[:length]
+	}
+
+	strBytes := []byte(s)
+	if len(strBytes) < length {
+		// Append padding
+		for i := 0; i < length-len(strBytes); i++ {
+			strBytes = append(strBytes, 0)
+		}
+	}
+
+	return p.WriteBytes(strBytes)
 }
