@@ -7,10 +7,10 @@ type RecvCheckUserLimit struct {
 	Unknown1 byte
 }
 
-func ReadCheckUserLimit(p packet.Packet) (res RecvCheckUserLimit) {
+func ReadCheckUserLimit(p packet.Packet) (recv RecvCheckUserLimit) {
 	pr := packet.NewPacketReader(p)
-	res.WorldId = pr.ReadOne()
-	res.Unknown1 = pr.ReadOne()
+	recv.WorldId = pr.ReadOne()
+	recv.Unknown1 = pr.ReadOne()
 
 	return
 }
