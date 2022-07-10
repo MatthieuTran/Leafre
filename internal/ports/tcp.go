@@ -84,17 +84,17 @@ func onPacket(scs session.SessionCommunicationService, handlers handlersMap) fun
 		var buf bytes.Buffer
 		if h, ok := handlers[header]; ok {
 			// Write packet
-			log.Printf("Handling %s: [%X] %s\n", h, header, p)
+			log.Printf("RECV %s: %s\n", h, p)
 			h.Handle(&buf, p.Bytes())
 		} else {
-			log.Printf("Unhandled Packet: %s\n", p)
+			log.Printf("RECV Unhandled Packet: %s\n", p)
 			return
 		}
 
 		// Send packet
 		res := buf.Bytes()
-		log.Printf("Send (%s): %s", id, packet.Packet(res))
 		scs.WriteToID(id, res)
+		log.Printf("SEND (%s): %s", id, packet.Packet(res))
 	}
 }
 

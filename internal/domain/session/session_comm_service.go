@@ -19,7 +19,7 @@ type defaultSessionCommunicationService struct {
 }
 
 func (scs *defaultSessionCommunicationService) EncryptPacket(id string, p []byte) (encrypted []byte, err error) {
-	s, err := scs.sessionRepo.GetById(context.Background(), id)
+	s, err := scs.sessionRepo.GetByID(context.Background(), id)
 	if err != nil {
 		return
 	}
@@ -28,7 +28,7 @@ func (scs *defaultSessionCommunicationService) EncryptPacket(id string, p []byte
 }
 
 func (scs *defaultSessionCommunicationService) DecryptPacket(id string, p []byte) (decrypted []byte, err error) {
-	s, err := scs.sessionRepo.GetById(context.Background(), id)
+	s, err := scs.sessionRepo.GetByID(context.Background(), id)
 	if err != nil {
 		return
 	}
@@ -37,7 +37,7 @@ func (scs *defaultSessionCommunicationService) DecryptPacket(id string, p []byte
 }
 
 func (scs *defaultSessionCommunicationService) ReadFromID(sessionID string, p []byte) (n int, err error) {
-	s, err := scs.sessionRepo.GetById(context.Background(), sessionID)
+	s, err := scs.sessionRepo.GetByID(context.Background(), sessionID)
 	if err != nil {
 		return
 	}
@@ -46,7 +46,7 @@ func (scs *defaultSessionCommunicationService) ReadFromID(sessionID string, p []
 }
 
 func (scs *defaultSessionCommunicationService) WriteToID(sessionID string, p []byte) (n int, err error) {
-	s, err := scs.sessionRepo.GetById(context.Background(), sessionID)
+	s, err := scs.sessionRepo.GetByID(context.Background(), sessionID)
 	if err != nil {
 		return
 	}

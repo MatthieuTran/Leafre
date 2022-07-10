@@ -26,7 +26,7 @@ func TestSessionRepository(t *testing.T) {
 
 	ctxGet, cancel := context.WithTimeout(ctx, time.Second*5)
 	defer cancel()
-	_, err = r.GetById(ctxGet, s.ID())
+	_, err = r.GetByID(ctxGet, s.ID())
 	if err != nil {
 		t.Error("Cannot get session from repository:", err)
 	}

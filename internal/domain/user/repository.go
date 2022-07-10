@@ -8,7 +8,7 @@ import (
 // UserRepository provides an interface for accessing the data-layer
 type UserRepository interface {
 	Add(ctx context.Context, user User) error
-	GetById(ctx context.Context, id int) (User, error)
+	GetByID(ctx context.Context, id int) (User, error)
 	GetByName(ctx context.Context, name string) (User, error)
 	Update(ctx context.Context, user User) error
 	Destroy(ctx context.Context, id int) (err error)
