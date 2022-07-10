@@ -9,13 +9,13 @@ import (
 //
 // A PacketWriter implements the io.Writer interfaces by writing into a byte slice.
 type PacketWriter interface {
-	WriteUInt16(n uint16) (err error)        // WriteUInt16 appends a number of type uint16 to the packet
-	WriteUInt32(n uint32) (err error)        // WriteUInt32 appends a number of type uint32 to the packet
-	WriteUInt64(n uint64) (err error)        // WriteUInt64 appends a number of type uint64 to the packet
-	WriteString(s string) (n int, err error) // WriteString appends a string to the packet
+	WriteUInt16(n uint16) (err error)        // WriteUInt16 appends a number of type uint16 `n` to the packet
+	WriteUInt32(n uint32) (err error)        // WriteUInt32 appends a number of type uint32 `n` to the packet
+	WriteUInt64(n uint64) (err error)        // WriteUInt64 appends a number of type uint64 `n` to the packet
+	WriteString(s string) (n int, err error) // WriteString appends a string `s` to the packet
+	WriteBytes(p []byte) (n int, err error)  // WriteBytes appends `len(p)` bytes from `p` to the packet
+	WriteOne(c byte) error                   // WriteOne appends byte `c` to the packet
 	Packet() Packet                          // Packet returns the packet associated with the writer
-	Write(p []byte) (n int, err error)       // PacketWriter implements `io.Writer`, appending `len(p)` bytes from `p` to the packet
-	WriteByte(c byte) error                  // PacketWriter implements `io.ByteWriter`, appending byte `c` to the packet
 }
 
 type maplePacketWriter struct {
@@ -30,11 +30,11 @@ func (p *maplePacketWriter) Packet() Packet {
 	return p.buf.Bytes()
 }
 
-func (p *maplePacketWriter) Write(buf []byte) (n int, err error) {
+func (p *maplePacketWriter) WriteBytes(buf []byte) (n int, err error) {
 	return n, binary.Write(&p.buf, binary.LittleEndian, buf)
 }
 
-func (p *maplePacketWriter) WriteByte(b byte) (err error) {
+func (p *maplePacketWriter) WriteOne(b byte) (err error) {
 	return p.buf.WriteByte(b)
 }
 
@@ -57,5 +57,5 @@ func (p *maplePacketWriter) WriteString(s string) (n int, err error) {
 		return -1, err
 	}
 
-	return p.Write([]byte(s))
+	return p.WriteBytes([]byte(s))
 }
