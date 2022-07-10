@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/matthieutran/leafre-login/server/writer"
+	"github.com/matthieutran/leafre-login/internal/app/handler/writer"
 )
 
 // TestWriteHandshake tests the writing part of the handshake to ensure the structure checks out

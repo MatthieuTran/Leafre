@@ -6,13 +6,13 @@ import (
 	"github.com/matthieutran/leafre-login/internal/domain/session"
 )
 
-func NewInmemSessionRepository() session.SessionRepository {
+func NewSessionRepository() session.SessionRepository {
 	sessions := make(map[string]session.Session)
 
 	return &SessionRepository{sessions: sessions}
 }
 
-// SessionRepository implements SessionRepository with an in memory map
+// SessionRepository implements SessionRepository with an in-memory map
 type SessionRepository struct {
 	sessions map[string]session.Session
 }

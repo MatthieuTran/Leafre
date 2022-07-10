@@ -54,8 +54,8 @@ func TestPacketWriter(t *testing.T) {
 	}
 	indx += 8
 
-	// WriteByte
-	p.WriteByte(buf[indx])
+	// WriteOne
+	p.WriteOne(buf[indx])
 	expectedByte := buf[indx]
 	actualByte := p.Packet()[indx]
 	if actualByte != expectedByte {
@@ -63,9 +63,9 @@ func TestPacketWriter(t *testing.T) {
 	}
 	indx += 1
 
-	// Write
+	// WriteBytes
 	expectedBytes := buf[indx : indx+9]
-	p.Write(expectedBytes[:])
+	p.WriteBytes(expectedBytes[:])
 	actualBytes := p.Packet()[indx : indx+9]
 	if !bytes.Equal(actualBytes[:], expectedBytes) {
 		t.Errorf("Expected buf[15:24] == %d, actual = %d", expectedBytes, actualBytes)
