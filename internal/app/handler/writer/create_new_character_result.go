@@ -11,8 +11,6 @@ import (
 
 type SendCreateNewCharacter struct {
 	Result    user.LoginResponse
-	Name      string
-	Duplicate byte
 	Character character.Character
 }
 
@@ -20,18 +18,19 @@ var OpCodeCreateNewCharacterResult uint16 = 0xE
 
 func WriteCreateNewCharacter(w io.Writer, send SendCreateNewCharacter) {
 	var charStats bytes.Buffer
-	// var charLook bytes.Buffer
+	var charLook bytes.Buffer
 	WriteCharacterStats(&charStats, send.Character)
-	// WriteCharacterLook(&charLook, send.Character)
+	WriteCharacterLook(&charLook, send.Character)
 
 	pw := packet.NewPacketWriter()
 	pw.WriteUInt16(OpCodeCreateNewCharacterResult)
 	pw.WriteOne(byte(send.Result))
 	if send.Result == user.LoginResponseSuccess {
 		pw.WriteBytes(charStats.Bytes())
-		// pw.WriteBytes(charLook.Bytes())
-		pw.WriteOne(0)
-		pw.WriteOne(0)
+		pw.WriteBytes(charLook.Bytes())
+
+		pw.WriteOne(0) // Rankings
+		pw.WriteOne(0) // World ranking position
 	} else {
 		pw.WriteUInt32(0)
 	}

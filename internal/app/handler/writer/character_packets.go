@@ -66,13 +66,13 @@ func WriteCharacterLook(w io.Writer, c character.Character) {
 	pw.WriteUInt32(c.Hair)
 
 	// Inventory
-	for equip := range stickers {
-		pw.WriteOne(key)
+	for equip := range c.Stickers() {
+		pw.WriteOne(equip.SlotID)
 		pw.WriteUInt32(equip.ID)
 	}
 	pw.WriteOne(0xFF)
-	for equip := range unseen {
-		pw.WriteOne(key)
+	for equip := range c.Equips() {
+		pw.WriteOne(equip.SlotID)
 		pw.WriteUInt32(equip.ID)
 	}
 	pw.WriteOne(0xFF)

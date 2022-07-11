@@ -29,14 +29,15 @@ func (r CharacterRepository) nameExists(name string) bool {
 	return false
 }
 
-func (r CharacterRepository) Add(ctx context.Context, c character.Character) error {
+func (r CharacterRepository) Add(ctx context.Context, c character.Character) (id uint32, err error) {
 	if r.nameExists(c.Name) {
-		return character.ErrAlreadyExists
+		return id, character.ErrAlreadyExists
 	}
 
 	c.ID = uint32(len(r.characters))
 	r.characters[c.ID] = c
-	return nil
+
+	return c.ID, nil
 }
 
 func (r CharacterRepository) GetByAccountID(ctx context.Context, accountID uint32) (chars character.Characters, err error) {

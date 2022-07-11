@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"context"
 	"io"
+	"log"
 
 	"github.com/matthieutran/leafre-login/internal/app/handler/reader"
 	"github.com/matthieutran/leafre-login/internal/app/handler/writer"
@@ -13,19 +15,40 @@ import (
 const OpCodeCreateNewCharacter uint16 = 0x16
 
 type CreateNewCharacter struct {
-	characterService character.CharacterService
+	charService character.CharacterService
 }
 
 func NewCreateNewCharacter(characterService character.CharacterService) CreateNewCharacter {
-	return CreateNewCharacter{characterService: characterService}
+	return CreateNewCharacter{charService: characterService}
 }
 
 func (h *CreateNewCharacter) Handle(w io.Writer, p packet.Packet) {
-	_ = reader.ReadCreateNewCharacter(p)
+	recv := reader.ReadCreateNewCharacter(p)
+	charDetails := character.CharacterForm{
+		Name:      recv.Name,
+		Job:       recv.Race,
+		SubJob:    recv.SubJob,
+		Face:      recv.Face,
+		Hair:      recv.Hair,
+		HairColor: recv.HairColor,
+		Skin:      byte(recv.Skin),
+		Coat:      recv.Coat,
+		Pants:     recv.Pants,
+		Shoes:     recv.Shoes,
+		Weapon:    recv.Weapon,
+		Gender:    recv.Gender,
+	}
+
+	char, err := h.charService.CreateCharacter(context.Background(), charDetails)
+	if err != nil {
+		log.Printf("Error creating character (name: %s): %s", recv.Name, err)
+		return
+	}
 
 	result := user.LoginResponseSuccess
 	send := writer.SendCreateNewCharacter{
-		Result: result,
+		Result:    result,
+		Character: char,
 	}
 	writer.WriteCreateNewCharacter(w, send)
 }

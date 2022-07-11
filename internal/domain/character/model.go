@@ -1,5 +1,7 @@
 package character
 
+import "github.com/matthieutran/leafre-login/internal/domain/item"
+
 type Character struct {
 	ID        uint32
 	AccountID uint32
@@ -37,6 +39,8 @@ type Character struct {
 	PlayTime uint32
 
 	SubJob uint16
+
+	Inventory map[item.InventoryType][]item.Item // Inventory is a map of inventory type to a slice of items
 }
 
 type Characters []Character
