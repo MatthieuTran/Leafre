@@ -139,7 +139,6 @@ func (s defaultCharacterService) GetCharactersByAccount(ctx context.Context, acc
 		for _, item := range charItems {
 			chars[i].Inventory[item.InventoryType] = append(chars[i].Inventory[item.InventoryType], item)
 		}
-		log.Println(char.Inventory)
 	}
 	return chars, err
 }

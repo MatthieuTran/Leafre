@@ -1,7 +1,6 @@
 package writer
 
 import (
-	"bytes"
 	"io"
 
 	"github.com/matthieutran/leafre-login/internal/domain/character"
@@ -17,17 +16,12 @@ type SendCreateNewCharacter struct {
 var OpCodeCreateNewCharacterResult uint16 = 0xE
 
 func WriteCreateNewCharacter(w io.Writer, send SendCreateNewCharacter) {
-	var charStats bytes.Buffer
-	var charLook bytes.Buffer
-	WriteCharacterStats(&charStats, send.Character)
-	WriteCharacterLook(&charLook, send.Character)
-
 	pw := packet.NewPacketWriter()
 	pw.WriteUInt16(OpCodeCreateNewCharacterResult)
 	pw.WriteOne(byte(send.Result))
 	if send.Result == user.LoginResponseSuccess {
-		pw.WriteBytes(charStats.Bytes())
-		pw.WriteBytes(charLook.Bytes())
+		WriteCharacterStats(pw, send.Character)
+		WriteCharacterLook(pw, send.Character)
 
 		pw.WriteOne(0) // Rankings
 		pw.WriteOne(0) // World ranking position

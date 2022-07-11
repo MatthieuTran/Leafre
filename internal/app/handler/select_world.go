@@ -31,7 +31,6 @@ func (h *HandlerSelectWorld) Handle(s session.Session, p packet.Packet) {
 	if err != nil {
 		log.Printf("Could not get characters for (accID: %d): %s", s.Account.ID, err)
 	}
-	log.Println(chars)
 
 	result := user.LoginResponseSuccess
 	send := writer.SendSelectWorld{

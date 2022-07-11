@@ -1,9 +1,7 @@
 package writer
 
 import (
-	"bytes"
 	"io"
-	"log"
 
 	"github.com/matthieutran/leafre-login/internal/domain/character"
 	"github.com/matthieutran/leafre-login/internal/domain/user"
@@ -28,17 +26,9 @@ func WriteSelectWorldResult(w io.Writer, send SendSelectWorld) {
 		// Send characters
 		pw.WriteOne(byte(len(send.Characters))) // Character count
 		for _, c := range send.Characters {
-			log.Println(c.Inventory)
-			var charStats bytes.Buffer
-			var charLook bytes.Buffer
-			WriteCharacterStats(&charStats, c)
-			WriteCharacterLook(&charLook, c)
-			pw.WriteBytes(charStats.Bytes())
-			pw.WriteBytes(charLook.Bytes())
-			// Write stats
-			// WriteCharacterStats(pw, c)
-			// WriteCharacterLook(pw, c)
-			// Write look
+			WriteCharacterStats(pw, c)
+			WriteCharacterLook(pw, c)
+
 			pw.WriteOne(0)
 			pw.WriteOne(0)
 		}
