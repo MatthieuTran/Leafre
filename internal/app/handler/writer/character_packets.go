@@ -3,8 +3,10 @@ package writer
 import (
 	"bytes"
 	"io"
+	"math"
 
 	"github.com/matthieutran/leafre-login/internal/domain/character"
+	"github.com/matthieutran/leafre-login/internal/domain/item"
 	"github.com/matthieutran/leafre-login/pkg/packet"
 )
 
@@ -19,9 +21,9 @@ func WriteCharacterStats(w io.Writer, c character.Character) {
 	pw.WriteUInt32(c.Hair)
 
 	// TODO: Pets
-	pw.WriteUInt32(0)
-	pw.WriteUInt32(0)
-	pw.WriteUInt32(0)
+	pw.WriteUInt64(0)
+	pw.WriteUInt64(0)
+	pw.WriteUInt64(0)
 
 	pw.WriteOne(c.Level)
 	pw.WriteUInt16(uint16(c.Job))
@@ -66,22 +68,27 @@ func WriteCharacterLook(w io.Writer, c character.Character) {
 	pw.WriteUInt32(c.Hair)
 
 	// Inventory
-	for equip := range c.Stickers() {
-		pw.WriteOne(equip.SlotID)
-		pw.WriteUInt32(equip.ID)
+	for _, equip := range c.Inventory[item.EQUIP] {
+		if equip.SlotID < -99 {
+			pw.WriteOne(byte(math.Abs(float64(equip.SlotID))))
+			pw.WriteUInt32(equip.ID)
+		}
+	}
+	for _, equip := range c.Inventory[item.EQUIP] {
+		pw.WriteOne(byte(math.Abs(float64(equip.SlotID))))
+		pw.WriteUInt32(equip.TemplateID)
 	}
 	pw.WriteOne(0xFF)
-	for equip := range c.Equips() {
-		pw.WriteOne(equip.SlotID)
-		pw.WriteUInt32(equip.ID)
-	}
 	pw.WriteOne(0xFF)
+
 	// cash
 	pw.WriteUInt32(0)
 
 	for i := 0; i < 3; i++ {
 		pw.WriteUInt32(0)
 	}
+
+	w.Write(pw.Packet())
 }
 
 func WriteCharacterExtendSP(w io.Writer, c character.Character) {

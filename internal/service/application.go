@@ -19,13 +19,14 @@ func NewApplication() *Application {
 	// Repositories
 	channelRepo := inmem.NewChannelRepository()
 	charRepo := inmem.NewCharacterRepository()
+	itemRepo := inmem.NewItemRepository()
 	sessionRepo := inmem.NewSessionRepository()
 	userRepo := inmem.NewUserRepository()
 	worldRepo := inmem.NewWorldRepository()
 
 	// Services
 	authService := user.NewAuthService(userRepo)
-	characterService := character.NewCharacterService(charRepo)
+	characterService := character.NewCharacterService(charRepo, itemRepo)
 	sessionService := session.NewSessionService(sessionRepo)
 	worldChannelService := domain.NewWorldChannelService(worldRepo, channelRepo)
 
@@ -39,6 +40,8 @@ func NewApplication() *Application {
 	checkDuplicatedID := handler.NewHandlerCheckDuplicatedID(characterService)
 	checkPassword := handler.NewHandlerCheckPassword(authService)
 	checkUserLimit := handler.NewHandlerCheckUserLimit()
+	createNewCharacter := handler.NewHandlerCreateNewCharacter(characterService)
+	clientDumpLog := handler.NewHandlerClientDumpLog()
 	selectWorld := handler.NewHandlerSelectWorld(worldChannelService)
 	worldRequest := handler.NewHandlerWorldRequest(worldChannelService)
 
@@ -46,8 +49,10 @@ func NewApplication() *Application {
 	addHandler(handler.OpCodeCheckPassword, &checkPassword)
 	addHandler(handler.OpCodeCheckDuplicatedID, &checkDuplicatedID)
 	addHandler(handler.OpCodeCheckUserLimit, &checkUserLimit)
+	addHandler(handler.OpCodeCreateNewCharacter, &createNewCharacter)
 	addHandler(handler.OpCodeWorldRequest, &worldRequest)
 	addHandler(handler.OpCodeSelectWorld, &selectWorld)
+	addHandler(handler.OpCodeClientDumpLog, &clientDumpLog)
 
 	return &Application{
 		SessionService: sessionService,

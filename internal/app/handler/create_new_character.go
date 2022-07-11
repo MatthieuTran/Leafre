@@ -18,7 +18,7 @@ type CreateNewCharacter struct {
 	charService character.CharacterService
 }
 
-func NewCreateNewCharacter(characterService character.CharacterService) CreateNewCharacter {
+func NewHandlerCreateNewCharacter(characterService character.CharacterService) CreateNewCharacter {
 	return CreateNewCharacter{charService: characterService}
 }
 
@@ -26,7 +26,7 @@ func (h *CreateNewCharacter) Handle(w io.Writer, p packet.Packet) {
 	recv := reader.ReadCreateNewCharacter(p)
 	charDetails := character.CharacterForm{
 		Name:      recv.Name,
-		Job:       recv.Race,
+		Job:       0,
 		SubJob:    recv.SubJob,
 		Face:      recv.Face,
 		Hair:      recv.Hair,
@@ -50,6 +50,7 @@ func (h *CreateNewCharacter) Handle(w io.Writer, p packet.Packet) {
 		Result:    result,
 		Character: char,
 	}
+
 	writer.WriteCreateNewCharacter(w, send)
 }
 

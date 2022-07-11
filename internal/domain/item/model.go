@@ -5,6 +5,7 @@ type Item struct {
 	CharacterID uint32
 
 	InventoryType InventoryType
+	SlotID        int
 	TemplateID    uint32
 	CashItemSN    uint64
 	DateExpire    MapleDateTime
@@ -63,6 +64,90 @@ const (
 	INSTALL
 	ETC
 	CASH
+)
+
+type BodyPart uint16
+
+const (
+	Hair BodyPart = iota
+	Cap
+	FaceAcc
+	EyeAcc
+	EarAcc
+	Clothes
+	Pants
+	Shoes
+	Gloves
+	Cape
+	Shield
+	Weapon
+	Ring1
+	Ring2
+	PetWear
+	Ring3
+	Ring4
+	Pendant
+	TamingMob
+	Saddle
+	MobEquip
+	PetRingLabel
+	PetAbilItem
+	PetAbilMeso
+	PetAbilHpConsume
+	PetAbilMechanicConsume
+	PetAbilSweepForDrop
+	PetAbilLongRange
+	PetAbilPickupOthers
+	PetRingQuote
+	PetWear2
+	PetRingLabel2
+	PetRingQuote2
+	PetAbilItem2
+	PetAbilMeso2
+	PetAbilSweepForDrop2
+	PetAbilLongRange2
+	PetAbilPickupOthers2
+	PetWear3
+	PetRingLabel3
+	PetRingQuote3
+	PetAbilItem3
+	PetAbilMeso3
+	PetAbilSweepForDrop3
+	PetAbilLongRange3
+	PetAbilPickupOthers3
+	PetAbilIgnoreItems1
+	PetAbilIgnoreItems2
+	PetAbilIgnoreItems3
+	Medal
+	Belt
+	Shoulder
+
+	Nothing3 BodyPart = iota + 2
+	Nothing2
+	Nothing1
+	Nothing0
+
+	Ext0 BodyPart = iota + 2
+	ExtPendant1
+	Ext1
+	Ext2
+	Ext3
+	Ext4
+	Ext5
+	Ext6
+
+	Sticker BodyPart = 100
+
+	DragonCap     BodyPart = 1000
+	DragonPendant BodyPart = 1001
+	DragonWing    BodyPart = 1002
+	DragonShoes   BodyPart = 1003
+
+	MechanicEngine     BodyPart = 1100
+	MechanicArm        BodyPart = 1101
+	MechanicLeg        BodyPart = 1102
+	MechanicFrame      BodyPart = 1103
+	MechanicTransistor BodyPart = 1104
 )
 
 func (t InventoryType) String() string {

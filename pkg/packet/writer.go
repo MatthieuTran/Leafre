@@ -69,11 +69,10 @@ func (p *maplePacketWriter) WritePaddedString(s string, length int) (n int, err 
 	}
 
 	strBytes := []byte(s)
-	if len(strBytes) < length {
-		// Append padding
-		for i := 0; i < length-len(strBytes); i++ {
-			strBytes = append(strBytes, 0)
-		}
+	buffer := length - len(strBytes)
+	// Append padding
+	for i := 0; i < buffer; i++ {
+		strBytes = append(strBytes, 0)
 	}
 
 	return p.WriteBytes(strBytes)

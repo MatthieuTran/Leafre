@@ -30,8 +30,8 @@ type CharacterService interface {
 
 var ErrIncorrectPassword = errors.New("incorrect password")
 
-func NewCharacterService(charRepo CharacterRepository) CharacterService {
-	return defaultCharacterService{charRepo: charRepo}
+func NewCharacterService(charRepo CharacterRepository, itemRepo item.ItemRepository) CharacterService {
+	return defaultCharacterService{charRepo: charRepo, itemRepo: itemRepo}
 }
 
 type defaultCharacterService struct {
@@ -62,17 +62,21 @@ func (s defaultCharacterService) CreateCharacter(ctx context.Context, charDetail
 	}
 
 	// Add items
-	var templateIDs []uint32
-	templateIDs = append(templateIDs, charDetails.Coat, charDetails.Pants, charDetails.Shoes, charDetails.Weapon)
-	for _, templateID := range templateIDs {
+	addEquip := func(templateID uint32, slotID item.BodyPart) {
 		it := item.Item{
 			CharacterID:   id,
 			InventoryType: item.EQUIP,
+			SlotID:        0 - int(slotID),
 			TemplateID:    templateID,
 		}
 
 		s.itemRepo.Add(ctx, it)
 	}
+
+	addEquip(charDetails.Coat, item.Clothes)
+	addEquip(charDetails.Pants, item.Pants)
+	addEquip(charDetails.Shoes, item.Shoes)
+	addEquip(charDetails.Weapon, item.Weapon)
 
 	return s.GetCharacter(ctx, id)
 }
@@ -102,6 +106,8 @@ func (s defaultCharacterService) GetCharacter(ctx context.Context, id uint32) (c
 	if err != nil {
 		return
 	}
+
+	c.Inventory = make(map[item.InventoryType][]item.Item)
 
 	// Add items to Character inventory map
 	for _, i := range charItems {

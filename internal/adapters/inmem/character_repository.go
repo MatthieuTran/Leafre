@@ -33,8 +33,12 @@ func (r CharacterRepository) Add(ctx context.Context, c character.Character) (id
 	if r.nameExists(c.Name) {
 		return id, character.ErrAlreadyExists
 	}
+	id = uint32(len(r.characters))
+	if id == 0 {
+		id = 1
+	}
 
-	c.ID = uint32(len(r.characters))
+	c.ID = id
 	r.characters[c.ID] = c
 
 	return c.ID, nil
