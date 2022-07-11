@@ -4,7 +4,7 @@ import "github.com/matthieutran/leafre-login/internal/domain/item"
 
 type Character struct {
 	ID        uint32
-	AccountID uint32
+	AccountID int
 	Name      string
 
 	Gender byte

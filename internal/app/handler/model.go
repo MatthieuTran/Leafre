@@ -2,8 +2,8 @@ package handler
 
 import (
 	"fmt"
-	"io"
 
+	"github.com/matthieutran/leafre-login/internal/domain/session"
 	"github.com/matthieutran/leafre-login/pkg/packet"
 )
 
@@ -13,6 +13,6 @@ var OpCodeEXAMPLE = 0x0
 //
 // While not in the interface, the PacketHandler should also provide an Opcode to identify itself in the same file.
 type PacketHandler interface {
-	Handle(io.Writer, packet.Packet)
+	Handle(session.Session, packet.Packet)
 	fmt.Stringer
 }

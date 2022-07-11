@@ -49,7 +49,7 @@ func (r UserRepository) Add(ctx context.Context, u user.User) error {
 		return user.ErrEmailAlreadyExists
 	}
 
-	u.ID = len(r.users)
+	u.ID = len(r.users) + 1
 	r.users[u.ID] = u
 	return nil
 }

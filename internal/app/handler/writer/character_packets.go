@@ -3,6 +3,7 @@ package writer
 import (
 	"bytes"
 	"io"
+	"log"
 	"math"
 
 	"github.com/matthieutran/leafre-login/internal/domain/character"
@@ -55,6 +56,7 @@ func WriteCharacterStats(w io.Writer, c character.Character) {
 	pw.WriteUInt32(c.PlayTime)
 	pw.WriteUInt16(c.SubJob)
 
+	log.Println(pw.Packet())
 	w.Write(pw.Packet())
 }
 
@@ -68,17 +70,21 @@ func WriteCharacterLook(w io.Writer, c character.Character) {
 	pw.WriteUInt32(c.Hair)
 
 	// Inventory
-	for _, equip := range c.Inventory[item.EQUIP] {
-		if equip.SlotID < -99 {
-			pw.WriteOne(byte(math.Abs(float64(equip.SlotID))))
-			pw.WriteUInt32(equip.ID)
-		}
-	}
+	// for _, equip := range c.Inventory[item.EQUIP] {
+	// 	if equip.SlotID < -99 {
+	// 		pw.WriteOne(byte(math.Abs(float64(equip.SlotID))))
+	// 		pw.WriteUInt32(equip.ID)
+	// 	}
+	// }
 	for _, equip := range c.Inventory[item.EQUIP] {
 		pw.WriteOne(byte(math.Abs(float64(equip.SlotID))))
 		pw.WriteUInt32(equip.TemplateID)
 	}
 	pw.WriteOne(0xFF)
+	for _, equip := range c.Inventory[item.EQUIP] {
+		pw.WriteOne(byte(math.Abs(float64(equip.SlotID))))
+		pw.WriteUInt32(equip.TemplateID)
+	}
 	pw.WriteOne(0xFF)
 
 	// cash

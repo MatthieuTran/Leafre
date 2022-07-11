@@ -36,6 +36,12 @@ func (sr *SessionRepository) GetByID(ctx context.Context, id string) (s session.
 	return
 }
 
+func (sr *SessionRepository) Update(ctx context.Context, s session.Session) error {
+	sr.sessions[s.ID()] = s
+
+	return nil
+}
+
 func (sr *SessionRepository) Destroy(ctx context.Context, id string) error {
 	if _, exists := sr.sessions[id]; !exists {
 		return session.ErrDoesNotExist

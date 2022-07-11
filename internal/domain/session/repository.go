@@ -9,6 +9,7 @@ import (
 type SessionRepository interface {
 	Add(ctx context.Context, s Session) error
 	GetByID(ctx context.Context, id string) (Session, error)
+	Update(ctx context.Context, s Session) error
 	Destroy(ctx context.Context, id string) (err error)
 }
 

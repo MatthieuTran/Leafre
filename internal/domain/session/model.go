@@ -2,6 +2,8 @@ package session
 
 import (
 	"net"
+
+	"github.com/matthieutran/leafre-login/internal/domain/user"
 )
 
 type Codec func(d []byte) []byte
@@ -11,6 +13,7 @@ type Session struct {
 	conn    net.Conn
 	encrypt Codec
 	decrypt Codec
+	Account user.User
 }
 
 func NewSession(conn net.Conn, encrypter, decrypter Codec) Session {
@@ -35,4 +38,10 @@ func (s Session) Encrypt(p []byte) []byte {
 
 func (s Session) Decrypt(p []byte) []byte {
 	return s.decrypt(p)
+}
+
+func (s Session) SetAccount(u user.User) Session {
+	var res Session
+	res.Account = u
+	return res
 }

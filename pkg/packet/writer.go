@@ -3,6 +3,7 @@ package packet
 import (
 	"bytes"
 	"encoding/binary"
+	"io"
 )
 
 // A PacketWriter is used to write structured data into a byte buffer.
@@ -17,6 +18,7 @@ type PacketWriter interface {
 	WriteBytes(p []byte) (n int, err error)                    // WriteBytes appends `len(p)` bytes from `p` to the packet
 	WriteOne(c byte) error                                     // WriteOne appends byte `c` to the packet
 	Packet() Packet                                            // Packet returns the packet associated with the writer
+	io.Writer
 }
 
 type maplePacketWriter struct {
@@ -29,6 +31,10 @@ func NewPacketWriter() PacketWriter {
 
 func (p *maplePacketWriter) Packet() Packet {
 	return p.buf.Bytes()
+}
+
+func (p *maplePacketWriter) Write(buf []byte) (n int, err error) {
+	return p.buf.Write(buf)
 }
 
 func (p *maplePacketWriter) WriteBytes(buf []byte) (n int, err error) {
