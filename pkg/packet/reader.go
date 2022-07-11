@@ -9,12 +9,13 @@ import (
 //
 // A PacketReader implements the io.Reader interfaces by reading from a byte slice.
 type PacketReader interface {
-	ReadUInt16() uint16     // WriteUInt16 reads data of type uint16 and returns it
-	ReadUInt32() uint32     // WriteUInt32 reads data of type uint32 and returns it
-	ReadUInt64() uint64     // WriteUInt64 reads data of type uint64 and returns it
-	ReadString() string     // WriteString reads data of type string and returns it
-	ReadBytes(n int) []byte // ReadBytes reads `n` bytes into a buffer and returns it
-	ReadOne() byte          // ReadOne reads 1 byte and returns it
+	ReadUInt16() uint16         // WriteUInt16 reads data of type uint16 and returns it
+	ReadUInt32() uint32         // WriteUInt32 reads data of type uint32 and returns it
+	ReadUInt64() uint64         // WriteUInt64 reads data of type uint64 and returns it
+	ReadString() string         // WriteString reads data of type string and returns it
+	ReadAvailableBytes() []byte // ReadAvailableBytes reads the rest of the byte buffer
+	ReadBytes(n int) []byte     // ReadBytes reads `n` bytes into a buffer and returns it
+	ReadOne() byte              // ReadOne reads 1 byte and returns it
 }
 
 type maplePacketReader struct {
@@ -32,6 +33,10 @@ func (p maplePacketReader) ReadBytes(n int) (buf []byte) {
 	buf = make([]byte, n)
 	binary.Read(p.reader, binary.LittleEndian, &buf)
 	return
+}
+
+func (p maplePacketReader) ReadAvailableBytes() (buf []byte) {
+	return p.ReadBytes(p.reader.Len())
 }
 
 func (p maplePacketReader) ReadOne() (b byte) {

@@ -28,7 +28,7 @@ func StartTCPServer(wg *sync.WaitGroup, ctx context.Context, app *service.Applic
 	return func(host string, port int) {
 		err := tcp.NewServer().
 			WithOnConnected(onConnected(app.SessionService)).
-			WithOnPacket(onPacket(app.SessionCommunicationService, app.Handlers)).
+			WithOnPacket(onPacket(app.SessionService, app.Handlers)).
 			WithOnDisconnected(onDisconnected(app.SessionService)).
 			Start(wg, ctx)(host, port)
 
@@ -65,36 +65,31 @@ func onConnected(ss session.SessionService) func(conn net.Conn) {
 
 type handlersMap map[uint16]handler.PacketHandler
 
-func onPacket(scs session.SessionCommunicationService, handlers handlersMap) func(conn net.Conn, data []byte) {
+func onPacket(ss session.SessionService, handlers handlersMap) func(conn net.Conn, data []byte) {
 	return func(conn net.Conn, data []byte) {
 		id := conn.RemoteAddr().String()
-
-		// Decrypt incoming packet
-		decrypted, err := scs.DecryptPacket(id, data)
-		p := packet.Packet(decrypted)
+		s, err := ss.GetSessionByID(context.Background(), id)
 		if err != nil {
-			log.Println("Error decrypting packet:", err)
+			log.Printf("Failed to get session (%s)", id)
 			return
 		}
 
+		// Decrypt incoming packet
+		p := packet.Packet(s.Decrypt(data))
+
+		// Parse header
 		var header uint16
 		r := bytes.NewReader(p.Header())
 		binary.Read(r, binary.LittleEndian, &header)
 
-		var buf bytes.Buffer
+		// Handle packet
 		if h, ok := handlers[header]; ok {
-			// Write packet
-			log.Printf("Handling %s: [%X] %s\n", h, header, p)
-			h.Handle(&buf, p.Bytes())
+			log.Printf("RECV %s: %s\n", h, p)
+			h.Handle(s, p.Bytes())
 		} else {
-			log.Printf("Unhandled Packet: %s\n", p)
+			log.Printf("RECV Unhandled Packet: %s\n", p)
 			return
 		}
-
-		// Send packet
-		res := buf.Bytes()
-		log.Printf("Send (%s): %s", id, packet.Packet(res))
-		scs.WriteToID(id, res)
 	}
 }
 

@@ -27,7 +27,7 @@ func (sr *SessionRepository) Add(ctx context.Context, s session.Session) error {
 	return nil
 }
 
-func (sr *SessionRepository) GetById(ctx context.Context, id string) (s session.Session, err error) {
+func (sr *SessionRepository) GetByID(ctx context.Context, id string) (s session.Session, err error) {
 	s, exists := sr.sessions[id]
 	if !exists {
 		return s, session.ErrDoesNotExist
