@@ -3,11 +3,13 @@ package character
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/matthieutran/leafre-login/internal/domain/item"
 )
 
 type CharacterForm struct {
+	AccountID int
 	Name      string
 	Job       uint32
 	SubJob    uint16
@@ -26,6 +28,7 @@ type CharacterService interface {
 	CreateCharacter(ctx context.Context, char CharacterForm) (Character, error)
 	CheckName(ctx context.Context, name string) (byte, error) // CheckName returns 0 if the name provided has not been taken, 1 if it has been taken
 	GetCharacter(ctx context.Context, id uint32) (Character, error)
+	GetCharactersByAccount(ctx context.Context, accID int) (Characters, error)
 }
 
 var ErrIncorrectPassword = errors.New("incorrect password")
@@ -46,6 +49,7 @@ const (
 
 func (s defaultCharacterService) CreateCharacter(ctx context.Context, charDetails CharacterForm) (c Character, err error) {
 	// Build Character
+	c.AccountID = charDetails.AccountID
 	c.Name = charDetails.Name
 	c.Job = Job(charDetails.Job)
 	c.SubJob = charDetails.SubJob
@@ -115,4 +119,26 @@ func (s defaultCharacterService) GetCharacter(ctx context.Context, id uint32) (c
 	}
 
 	return
+}
+
+func (s defaultCharacterService) GetCharactersByAccount(ctx context.Context, accID int) (chars Characters, err error) {
+	chars, err = s.charRepo.GetByAccountID(ctx, accID)
+	if err != nil {
+		log.Printf("Failed to fetch characters for account id %d: %s", accID, err)
+		return
+	}
+	for i, char := range chars {
+		charItems, err := s.itemRepo.GetAllByCharacterID(ctx, char.ID)
+		if err != nil {
+			log.Printf("Failed to fetch items for CID: %d: %s", char.ID, err)
+			return chars, err
+		}
+
+		chars[i].Inventory = make(map[item.InventoryType][]item.Item)
+
+		for _, item := range charItems {
+			chars[i].Inventory[item.InventoryType] = append(chars[i].Inventory[item.InventoryType], item)
+		}
+	}
+	return chars, err
 }

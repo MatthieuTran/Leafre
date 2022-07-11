@@ -2,11 +2,11 @@ package handler
 
 import (
 	"context"
-	"io"
 	"log"
 
 	"github.com/matthieutran/leafre-login/internal/app/handler/writer"
 	"github.com/matthieutran/leafre-login/internal/domain"
+	"github.com/matthieutran/leafre-login/internal/domain/session"
 	"github.com/matthieutran/leafre-login/pkg/packet"
 )
 
@@ -22,7 +22,7 @@ func NewHandlerWorldRequest(worldChannelService domain.WorldChannelService) Hand
 	}
 }
 
-func (h *HandlerWorldRequest) Handle(w io.Writer, p packet.Packet) {
+func (h *HandlerWorldRequest) Handle(s session.Session, p packet.Packet) {
 	// Fetch a list of all the worlds
 	worlds, err := h.worldChannelService.GetAllWorlds(context.Background())
 	if err != nil {
@@ -32,17 +32,18 @@ func (h *HandlerWorldRequest) Handle(w io.Writer, p packet.Packet) {
 
 	// Send information regarding the world and its channels
 	for _, worldChannel := range worlds {
-		writer.WriteWorldInformation(w, worldChannel.World, worldChannel.Channels)
+		writer.WriteWorldInformation(s, worldChannel.World, worldChannel.Channels)
 	}
 
 	// Send the signal that there are no more worlds to be added
-	writer.WriteWorldInformationDone(w)
+	writer.WriteWorldInformationDone(s)
 
 	// Send the user's last connected world
 	send := writer.SendLatestConnectedWorld{
 		LatestConnectedWorld: 0,
 	}
-	writer.WriteLatestConnectedWorld(w, send)
+
+	writer.WriteLatestConnectedWorld(s, send)
 }
 
 func (h *HandlerWorldRequest) String() string {

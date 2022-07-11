@@ -2,6 +2,7 @@ package inmem
 
 import (
 	"context"
+	"log"
 
 	"github.com/matthieutran/leafre-login/internal/domain/character"
 )
@@ -33,18 +34,16 @@ func (r CharacterRepository) Add(ctx context.Context, c character.Character) (id
 	if r.nameExists(c.Name) {
 		return id, character.ErrAlreadyExists
 	}
-	id = uint32(len(r.characters))
-	if id == 0 {
-		id = 1
-	}
 
-	c.ID = id
+	c.ID = uint32(len(r.characters)) + 1
 	r.characters[c.ID] = c
 
 	return c.ID, nil
 }
 
-func (r CharacterRepository) GetByAccountID(ctx context.Context, accountID uint32) (chars character.Characters, err error) {
+func (r CharacterRepository) GetByAccountID(ctx context.Context, accountID int) (chars character.Characters, err error) {
+	log.Println("Looking for chars in accountID:", accountID)
+	log.Println("Chars", r.characters)
 	for _, c := range r.characters {
 		if c.AccountID == accountID {
 			chars = append(chars, c)

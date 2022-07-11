@@ -3,6 +3,7 @@ package writer
 import (
 	"io"
 
+	"github.com/matthieutran/leafre-login/internal/domain/character"
 	"github.com/matthieutran/leafre-login/internal/domain/user"
 	"github.com/matthieutran/leafre-login/pkg/packet"
 )
@@ -11,7 +12,8 @@ import (
 var OpCodeSelectWorldResult uint16 = 0xB
 
 type SendSelectWorld struct {
-	Result user.LoginResponse
+	Result     user.LoginResponse
+	Characters character.Characters
 }
 
 // WriteSelectWorldResult writes the world user limit information
@@ -21,12 +23,12 @@ func WriteSelectWorldResult(w io.Writer, send SendSelectWorld) {
 	pw.WriteOne(byte(send.Result))
 
 	if send.Result == user.LoginResponseSuccess {
-		var characters []interface{}
 		// Send characters
-		pw.WriteOne(byte(len(characters))) // Character count
-		for range characters {
-			// Write stats
-			// Write look
+		pw.WriteOne(byte(len(send.Characters))) // Character count
+		for _, c := range send.Characters {
+			WriteCharacterStats(pw, c)
+			WriteCharacterLook(pw, c)
+
 			pw.WriteOne(0)
 			pw.WriteOne(0)
 		}

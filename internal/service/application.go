@@ -28,6 +28,7 @@ func NewApplication() *Application {
 	authService := user.NewAuthService(userRepo)
 	characterService := character.NewCharacterService(charRepo, itemRepo)
 	sessionService := session.NewSessionService(sessionRepo)
+	userService := user.NewUserService(userRepo)
 	worldChannelService := domain.NewWorldChannelService(worldRepo, channelRepo)
 
 	// handlers is a map of opcodes to packet handlers
@@ -38,11 +39,11 @@ func NewApplication() *Application {
 
 	// Initialize packet handlers
 	checkDuplicatedID := handler.NewHandlerCheckDuplicatedID(characterService)
-	checkPassword := handler.NewHandlerCheckPassword(authService)
+	checkPassword := handler.NewHandlerCheckPassword(authService, userService, sessionService)
 	checkUserLimit := handler.NewHandlerCheckUserLimit()
 	createNewCharacter := handler.NewHandlerCreateNewCharacter(characterService)
 	clientDumpLog := handler.NewHandlerClientDumpLog()
-	selectWorld := handler.NewHandlerSelectWorld(worldChannelService)
+	selectWorld := handler.NewHandlerSelectWorld(worldChannelService, characterService)
 	worldRequest := handler.NewHandlerWorldRequest(worldChannelService)
 
 	// Add packet handlers to the map

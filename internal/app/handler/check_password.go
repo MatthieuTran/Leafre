@@ -2,10 +2,11 @@ package handler
 
 import (
 	"context"
-	"io"
+	"log"
 
 	"github.com/matthieutran/leafre-login/internal/app/handler/reader"
 	"github.com/matthieutran/leafre-login/internal/app/handler/writer"
+	"github.com/matthieutran/leafre-login/internal/domain/session"
 	"github.com/matthieutran/leafre-login/internal/domain/user"
 	"github.com/matthieutran/leafre-login/pkg/packet"
 )
@@ -13,16 +14,20 @@ import (
 const OpCodeCheckPassword uint16 = 0x1
 
 type HandlerCheckPassword struct {
-	authService user.AuthService
+	authService    user.AuthService
+	userService    user.UserService
+	sessionService session.SessionService
 }
 
-func NewHandlerCheckPassword(userService user.AuthService) HandlerCheckPassword {
+func NewHandlerCheckPassword(authService user.AuthService, userService user.UserService, sessionService session.SessionService) HandlerCheckPassword {
 	return HandlerCheckPassword{
-		authService: userService,
+		authService:    authService,
+		userService:    userService,
+		sessionService: sessionService,
 	}
 }
 
-func (h *HandlerCheckPassword) Handle(w io.Writer, p packet.Packet) {
+func (h *HandlerCheckPassword) Handle(s session.Session, p packet.Packet) {
 	// Read CheckPassword
 	recv := reader.ReadLogin(p)
 	form := user.AuthForm{
@@ -39,8 +44,17 @@ func (h *HandlerCheckPassword) Handle(w io.Writer, p packet.Packet) {
 		V44:            1,
 	}
 
+	if res == user.LoginResponseSuccess {
+		u, err := h.userService.GetUserByName(context.Background(), recv.Username)
+		log.Println("USER ID:", u.ID)
+		if err != nil {
+			log.Printf("Could not get user object (%s): %s", recv.Username, err)
+		}
+		h.sessionService.SetSessionAccount(context.Background(), s.ID(), u)
+	}
+
 	// Write CheckPasswordResult
-	writer.WriteCheckPasswordResult(w, send)
+	writer.WriteCheckPasswordResult(s, send)
 }
 
 func (h *HandlerCheckPassword) String() string {

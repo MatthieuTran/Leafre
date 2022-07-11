@@ -1,12 +1,17 @@
 package session
 
-import "context"
+import (
+	"context"
+
+	"github.com/matthieutran/leafre-login/internal/domain/user"
+)
 
 // SessionService is a domain-level service acting as a facade for a SessionRepository
 type SessionService interface {
 	CreateSession(ctx context.Context, session Session) error
 	GetSessionByID(ctx context.Context, id string) (Session, error)
 	RemoveSession(ctx context.Context, id string) error
+	SetSessionAccount(ctx context.Context, id string, user user.User) (err error)
 }
 
 func NewSessionService(sr SessionRepository) SessionService {
@@ -27,4 +32,12 @@ func (ss *defaultSessionService) GetSessionByID(ctx context.Context, id string) 
 
 func (ss *defaultSessionService) RemoveSession(ctx context.Context, id string) error {
 	return ss.repository.Destroy(ctx, id)
+}
+
+func (ss *defaultSessionService) SetSessionAccount(ctx context.Context, id string, account user.User) (err error) {
+	s, _ := ss.GetSessionByID(ctx, id)
+	s.Account = account
+
+	ss.repository.Update(ctx, s)
+	return nil
 }

@@ -2,12 +2,12 @@ package handler
 
 import (
 	"context"
-	"io"
 	"log"
 
 	"github.com/matthieutran/leafre-login/internal/app/handler/reader"
 	"github.com/matthieutran/leafre-login/internal/app/handler/writer"
 	"github.com/matthieutran/leafre-login/internal/domain/character"
+	"github.com/matthieutran/leafre-login/internal/domain/session"
 	"github.com/matthieutran/leafre-login/internal/domain/user"
 	"github.com/matthieutran/leafre-login/pkg/packet"
 )
@@ -22,9 +22,10 @@ func NewHandlerCreateNewCharacter(characterService character.CharacterService) C
 	return CreateNewCharacter{charService: characterService}
 }
 
-func (h *CreateNewCharacter) Handle(w io.Writer, p packet.Packet) {
+func (h *CreateNewCharacter) Handle(s session.Session, p packet.Packet) {
 	recv := reader.ReadCreateNewCharacter(p)
 	charDetails := character.CharacterForm{
+		AccountID: s.Account.ID,
 		Name:      recv.Name,
 		Job:       0,
 		SubJob:    recv.SubJob,
@@ -51,7 +52,7 @@ func (h *CreateNewCharacter) Handle(w io.Writer, p packet.Packet) {
 		Character: char,
 	}
 
-	writer.WriteCreateNewCharacter(w, send)
+	writer.WriteCreateNewCharacter(s, send)
 }
 
 func (h *CreateNewCharacter) String() string {
